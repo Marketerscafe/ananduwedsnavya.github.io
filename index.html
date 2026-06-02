@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>You Are Invited</title>
+    <!-- SEO & Luxury Styling Pre-reqs -->
+    <meta
+      name="description"
+      content="A luxury cinematic invitation experience."
+    />
+    <!-- Google Fonts for Editorial Luxury -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Main Stylesheet (with cache-buster) -->
+    <link rel="stylesheet" href="style.css?v=113.0" />
+  </head>
+  <body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loading-screen">
+      <div class="loading-content">
+        <h1 class="loading-text">Please wait</h1>
+        <div class="loading-spinner"></div>
+      </div>
+    </div>
+
+    <!-- Cinematic Entry Viewport Container -->
+    <main class="cinematic-container" id="cinematic-container">
+      <div class="video-wrapper" id="video-wrapper">
+        <video
+          id="intro-video"
+          playsinline
+          muted
+          preload="auto"
+          class="intro-video"
+        >
+          <!-- Src will be dynamically bound on load to prevent double preloading -->
+        </video>
+        <!-- Cinematic Ambient Light (Luxurious panning golden-hour glow) -->
+        <div class="cinematic-ambient-light" id="cinematic-ambient-light"></div>
+      </div>
+    </main>
+
+    <!-- Scene 2: Caustic Atmosphere & Editorial Names -->
+    <section
+      class="scene-2-container"
+      id="scene-2-container"
+    >
+      <div class="scene-2-content" id="scene-2-content">
+        <!-- Water Caustic Atmosphere — dual-video seamless crossfade loop -->
+        <div
+          class="caustic-atmosphere-wrapper"
+          id="caustic-atmosphere-wrapper"
+          aria-hidden="true"
+        >
+          <video
+            id="caustic-a"
+            class="caustic-layer"
+            playsinline
+            muted
+            autoplay
+            preload="auto"
+            src="assets/video/caustic.mp4"
+          ></video>
+          <video
+            id="caustic-b"
+            class="caustic-layer"
+            playsinline
+            muted
+            autoplay
+            preload="auto"
+            src="assets/video/caustic.mp4"
+          ></video>
+        </div>
+
+        <header class="scene-2-header">
+          <p class="invite-text mobile-invite">
+            JOIN US AS OUR SOULS<br />FIND HOME IN EACH OTHER
+          </p>
+          <p class="invite-text desktop-invite">
+            JOIN US AS OUR SOULS FIND HOME IN EACH OTHER
+          </p>
+        </header>
+
+        <div class="editorial-names-wrapper">
+          <div class="name-block groom-block">
+            <div class="first-name">
+              <span class="editorial-letter"
+                ><span class="letter-bg">A</span
+                ><span class="letter-main">A</span></span
+              >nandu
+            </div>
+            <div class="last-name">
+              <span class="editorial-letter"
+                ><span class="letter-bg">K</span
+                ><span class="letter-main">K</span></span
+              >rishnan
+            </div>
+          </div>
+
+          <div class="ampersand-divider">&amp;</div>
+
+          <div class="name-block bride-block">
+            <div class="first-name">
+              <span class="editorial-letter"
+                ><span class="letter-bg">N</span
+                ><span class="letter-main">N</span></span
+              >avya
+            </div>
+            <div class="last-name">
+              <span class="editorial-letter"
+                ><span class="letter-bg">J</span
+                ><span class="letter-main">J</span></span
+              >ohn
+            </div>
+          </div>
+        </div>
+
+        <footer class="scene-2-footer">
+          <p class="date-location-line">
+            TO WITNESS THE BEGINNING OF OUR FOREVER
+          </p>
+          <div class="scroll-divider">
+            <span class="divider-line"></span>
+            <span class="divider-dot"></span>
+          </div>
+        </footer>
+      </div>
+    </section>
+
+    <section
+      class="scene-3-container"
+      id="scene-3-container"
+      aria-hidden="true"
+    >
+      <!-- Layer 2: Champagne Image Sequence -->
+      <div class="scene3-champagne-sequence" id="scene3-champagne-sequence">
+        <img
+          id="scene3-champagne-img"
+          src="assets/images/champagne/frame_001.jpg"
+          alt="Champagne celebration"
+          class="champagne-sequence-img"
+          loading="eager"
+        />
+      </div>
+
+      <!-- Layer 3: Date Typography -->
+      <div class="scene-3-content" id="scene-3-content">
+        <div class="s3-save-date">— SAVE THE DATE</div>
+
+        <div class="s3-date-lockup">
+          <div class="s3-date-row s3-date-day">12</div>
+          <div class="s3-date-row s3-date-month">JULY</div>
+          <div class="s3-date-row s3-date-year">2026</div>
+        </div>
+
+        <div class="s3-time-tag">SUNDAY &middot; 10:30 AM</div>
+
+        <!-- Live countdown timer -->
+        <div
+          class="s3-countdown"
+          id="s3-countdown"
+          aria-label="Countdown to the wedding"
+        >
+          <div class="s3-countdown-item">
+            <span class="s3-countdown-value" id="s3-days">00</span>
+            <span class="s3-countdown-label">DAYS</span>
+          </div>
+          <div class="s3-countdown-item">
+            <span class="s3-countdown-value" id="s3-hours">00</span>
+            <span class="s3-countdown-label">HOURS</span>
+          </div>
+          <div class="s3-countdown-item">
+            <span class="s3-countdown-value" id="s3-minutes">00</span>
+            <span class="s3-countdown-label">MINUTES</span>
+          </div>
+          <div class="s3-countdown-item">
+            <span class="s3-countdown-value" id="s3-seconds">00</span>
+            <span class="s3-countdown-label">SECONDS</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Layer 4: Future Butterfly Layer (placeholder only) -->
+      <div class="scene3-butterfly-layer" aria-hidden="true"></div>
+
+      <!-- Layer 5: Future Atmospheric Veil (placeholder only) -->
+      <div class="scene3-atmosphere-layer" aria-hidden="true"></div>
+    </section>
+    <!-- Scene 4 Container (Portal Wedding Arch Gateway) -->
+    <section
+      class="scene-4-container"
+      id="scene-4-container"
+      aria-hidden="true"
+    >
+      <div class="scene-4-content" id="scene-4-content">
+        <!-- ARCH WRAPPER: Sits in the center and contains all S4 elements nested proportionally -->
+        <div class="s4-arch-wrapper" id="s4-arch-wrapper" aria-hidden="true">
+          <!-- 1. BUTTERFLIES HANDLED BY THREE.JS MODEL (butterfly.js) -->
+
+          <!-- 2. HEADING LAYER: z-index: 5 (Suspended plain text title) -->
+          <div class="s4-heading-wrapper" id="s4-heading-wrapper">
+            <h2 class="s4-main-heading" id="s4-main-heading">
+              Wedding Day Timeline
+            </h2>
+          </div>
+
+          <!-- 3. CARDS LAYER: z-index: 7 (Suspended timeline cards) -->
+          <div class="s4-timeline-layout" id="s4-timeline-layout">
+            <div class="s4-column s4-column-left">
+              <div class="s4-timeline-wrapper">
+                <!-- Card 1: Wedding Ceremony -->
+                <div class="s4-card-container" id="s4-card-1">
+                  <div class="s4-card-content">
+                    <h3 class="s4-card-event-title">Wedding Ceremony</h3>
+                    <p class="s4-card-event-time">10:30 AM &ndash; 12:30 PM</p>
+                    <p class="s4-card-event-tag">Sacred Union</p>
+                  </div>
+                </div>
+
+                <!-- Card 2: Reception -->
+                <div class="s4-card-container" id="s4-card-2">
+                  <div class="s4-card-content">
+                    <h3 class="s4-card-event-title">Reception</h3>
+                    <p class="s4-card-event-time">1:00 PM Onwards</p>
+                    <p class="s4-card-event-tag">Join Us In Celebration</p>
+                  </div>
+                </div>
+
+                <!-- Card 3: Lunch Celebration -->
+                <div class="s4-card-container" id="s4-card-3">
+                  <div class="s4-card-content">
+                    <h3 class="s4-card-event-title">Followed by lunch</h3>
+                    <p class="s4-card-event-tag">Make sure you are prepped to feast</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. ARCH FRAME IMAGE: z-index: 10 (Foreground architectural anchor) -->
+          <img
+            id="s4-arch-img"
+            src="assets/images/arch.png?v=94.0"
+            alt="Wedding floral arch gateway"
+            class="s4-arch-img"
+          />
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="scene-5-container"
+      id="scene-5-container"
+      aria-hidden="true"
+    >
+      <div class="s5-layout">
+        <!-- LEFT COLUMN: VENUE INFO -->
+        <div class="s5-left">
+          <div class="s5-header-group">
+            <span class="s5-label">THE CELEBRATION</span>
+            <h1 class="s5-title">Venue</h1>
+          </div>
+
+          <div class="s5-venue-info">
+            <h3 class="s5-venue-name">Tamara Weddings & Events</h3>
+            <p class="s5-address">
+              24, I.P. Nagar 9th Phase, Banerghatta Road,<br />
+              Golahalli, Bangalore - 560108
+            </p>
+          </div>
+
+          <div class="s5-action-buttons">
+            <button id="s5-directions-btn" class="s5-btn s5-btn-primary">
+              <svg class="s5-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              Get Directions
+            </button>
+            <button id="s5-calendar-btn" class="s5-btn s5-btn-secondary">
+              <svg class="s5-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              Add to Calendar
+            </button>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: RSVP FORM -->
+        <div class="s5-right">
+          <div class="s5-rsvp-card">
+            <div class="s5-rsvp-header">
+              <span class="s5-label">RSVP</span>
+              <h2 class="s5-rsvp-title">Will you join us?</h2>
+              <p class="s5-rsvp-subtitle">We would be honored by your presence. Please share your plans with us.</p>
+            </div>
+
+            <form id="s5-rsvp-form" class="s5-form">
+              <!-- Full Name -->
+              <div class="s5-form-group">
+                <label class="s5-form-label">YOUR NAME</label>
+                <input type="text" id="s5-fullname" name="entry.1505058638" placeholder="Enter your full name" required />
+              </div>
+
+              <!-- Number of Guests -->
+              <div class="s5-form-group">
+                <label class="s5-form-label">NUMBER OF GUESTS</label>
+                <select id="s5-guests" name="entry.144312370" required>
+                  <option value="">Select number of guests</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5+">5+</option>
+                </select>
+              </div>
+
+              <!-- Attendance -->
+              <div class="s5-form-group">
+                <label class="s5-form-label">ATTENDANCE</label>
+                <div class="s5-radio-group">
+                  <label class="s5-radio-label">
+                    <input type="radio" name="entry.633373139" value="Attending" checked />
+                    <span>ATTENDING</span>
+                  </label>
+                  <label class="s5-radio-label">
+                    <input type="radio" name="entry.633373139" value="Unable to attend" />
+                    <span>UNABLE TO ATTEND</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Submit -->
+              <button type="submit" class="s5-btn s5-btn-submit">CONFIRM ATTENDANCE</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- RSVP Confirmation Modal -->
+      <div id="s5-modal" class="s5-modal" hidden>
+        <div class="s5-modal-backdrop"></div>
+        <div class="s5-modal-content">
+          <div class="s5-modal-emoji" id="s5-modal-emoji">🎉</div>
+          <h3 class="s5-modal-title" id="s5-modal-title">Thank you for showing up!</h3>
+          <p class="s5-modal-message" id="s5-modal-message">Message here</p>
+          <button type="button" class="s5-btn s5-btn-submit" onclick="document.getElementById('s5-modal').hidden = true">CLOSE</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scene 6 Container (Final Celebration & Farewell) -->
+    <section
+      class="scene-6-container"
+      id="scene-6-container"
+      aria-hidden="true"
+    >
+      <div class="scene-6-content" id="scene-6-content">
+        <!-- Background Image -->
+        <img
+          src="assets/images/farewell.jpg"
+          alt="Celebration farewell image"
+          class="scene-6-bg-image"
+          id="scene-6-bg-image"
+        />
+
+        <!-- Glassmorphic Overlay Container -->
+        <div class="scene-6-glass-overlay" id="scene-6-glass-overlay">
+          <div class="scene-6-message-wrapper">
+            <p class="scene-6-wishes">Best wishes from</p>
+            <h3 class="scene-6-names">Melvin John & Athul Krishnan</h3>
+            <p class="scene-6-closing">See you soon!</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Global Volumetric Cinematic Fog Overlay (Foreground atmospheric veil) -->
+    <div
+      class="cinematic-fog-overlay"
+      id="cinematic-fog-overlay"
+      aria-hidden="true"
+    ></div>
+
+    <!-- Cinematic Transition Fog (Soft warm cloud overlay for seamless crossfade) -->
+    <div
+      class="cinematic-transition-fog"
+      id="cinematic-transition-fog"
+      aria-hidden="true"
+    ></div>
+
+    <!-- Three.js 3D Library & GLTF Loader -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
+    <!-- Script Logic (with cache-buster) -->
+    <script src="main.js?v=107.0" defer></script>
+    <script src="butterfly.js?v=107.0" defer></script>
+  </body>
+</html>

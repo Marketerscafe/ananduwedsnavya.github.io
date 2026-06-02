@@ -1,0 +1,2501 @@
+/* 
+  Foundational Cinematic Stylesheet 
+  Luxury Pacing, Editorial Restraint, and Tactile Scale
+*/
+
+@font-face {
+  font-family: 'Qinferly';
+  src: url('assets/fonts/Qinferly.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Kalieb';
+  src: url('assets/fonts/KaliebLuxuryDemo-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'VogueModerne';
+  src: url('assets/fonts/VogueModerne.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Luxury Model';
+  src: url('assets/fonts/LuxuryModel.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Saol Display';
+  src: url('assets/fonts/SaolDisplayRegular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SaolDisplay';
+  src: url('assets/fonts/SaolDisplayRegular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GreatVibes';
+  src: url('assets/fonts/GreatVibes-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Kazequill';
+  src: url('assets/fonts/KazequillDemo.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Regista';
+  src: url('assets/fonts/Regista.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Glirock';
+  src: url('assets/fonts/Glirock.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Eline Novika';
+  src: url('assets/fonts/ElineNovikaRegular-vnOWD.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Reset & Core Aesthetics */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* Prevent scrolling/bouncing completely */
+  background-color: #F5F2EB; /* Warm ivory — seamless canvas beneath all scenes */
+  font-family: 'SaolDisplay', 'VogueModerne', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Loading Screen */
+.loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #d3d3d3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 0.13;
+  transition: opacity 0.6s ease-out;
+  pointer-events: auto;
+}
+
+.loading-screen.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loading-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+.loading-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(24px, 5vw, 48px);
+  font-weight: 400;
+  color: #3A120F;
+  margin: 0;
+  letter-spacing: 0.05em;
+  line-height: 1.4;
+  max-width: 80%;
+}
+
+.loading-spinner {
+  width: 60px;
+  height: 60px;
+  border: 3px solid rgba(58, 18, 15, 0.2);
+  border-top: 3px solid #3A120F;
+  border-radius: 50%;
+  animation: spin 1.2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
+
+/* 
+  Cinematic Container 
+  Locks the viewport and blends video edges naturally using espresso-charcoal background 
+*/
+.cinematic-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #0F0B09; /* Seamless luxury warmth */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  overflow: hidden;
+  opacity: 1;
+  transition: opacity 2.5s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+/* Cross-dissolve state: smooth cinematic melt */
+.cinematic-container.dissolved {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* 
+  Video Scaling Wrapper 
+  Protects video aspect ratios naturally and centers composition exactly 
+*/
+.video-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 
+  Contained Intro Video 
+  Default styling, source bounds dynamically. Visible instantly.
+*/
+.intro-video {
+  width: 100%;
+  height: 100%;
+  object-position: center;
+  opacity: 1; /* Instantly visible for first frame tap entry */
+  background-color: transparent;
+  cursor: pointer;
+}
+
+/* 
+  Cinematic Ambient Light 
+  Creates a dominant golden-hour warm editorial light source.
+  Pans upward slowly using GPU acceleration to follow the camera and envelope flap opening.
+*/
+.cinematic-ambient-light {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 140%; /* Taller to allow upward panning */
+  z-index: 12; /* Above video */
+  pointer-events: none; /* Let interactions pass through naturally to the video container */
+  background: radial-gradient(
+    circle at 50% 80%, /* Positioned low initially, near the wax seal */
+    rgba(244, 224, 194, 0.15) 0%, /* Luxurious warm golden-hour glow */
+    rgba(15, 11, 9, 0) 55%
+  );
+  transform: translateY(15%); /* Sits slightly lower initially */
+  transition: transform 5.5s cubic-bezier(0.16, 1, 0.3, 1), 
+              opacity 5.5s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0.7;
+}
+
+/* Pans the ambient lighting upward slowly as the envelope flap opens */
+.cinematic-ambient-light.playing {
+  transform: translateY(-20%);
+  opacity: 0.95;
+}
+
+/* --- Portrait Viewport (Mobile First) --- */
+@media (orientation: portrait) {
+  .intro-video {
+    object-fit: contain; /* Pure vertical composition safety, protecting focal elements */
+  }
+}
+
+/* --- Landscape Viewport (Desktop) --- */
+@media (orientation: landscape) {
+  .intro-video {
+    object-fit: cover; /* Fully fills the screen naturally for widescreen cinematic immersion */
+  }
+}
+
+/* 
+  Scene 2 Placeholder Container 
+  Warm Luxury Ivory stationery background, transitions in behind the video 
+*/
+.scene-2-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* High-fashion gallery lighting stationery gradient vignette */
+  /* Optical center pulls upward ~2% to weight the emotional gravity toward the names */
+  background: radial-gradient(ellipse 120% 110% at 50% 46%, #FCFAF7 0%, #F8F4EE 40%, #F6F1EA 65%, #F0EAE0 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: -1; /* Kept behind the video to prevent mobile z-index touch interception */
+  opacity: 0;
+  transition: opacity 0.1s linear;
+  pointer-events: none;
+  overflow: hidden;
+  will-change: opacity;
+}
+
+/* Scene 2 container when active: keep it visible */
+.scene-2-container.active {
+  /* display: none !important; - Removed to show Scene 2 */
+}
+
+/* 
+  Global Volumetric Cinematic Fog Overlay
+  Creates a warm ivory foreground atmospheric veil that masks the transition
+*/
+.cinematic-fog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1; /* Sits behind video container initially */
+  pointer-events: none;
+  background: radial-gradient(circle at center, #EFE7DD 0%, #E8DDD2 60%, #F5F2EB 100%);
+  opacity: 0;
+  will-change: opacity;
+}
+
+
+
+
+
+/* 
+  Imperceptible Background Atmospheric Exposure Breathing
+  Emulates softly lit luxury paper under cinematic golden-hour light using Blush Nude (#DCCAC2)
+*/
+.scene-2-container::before {
+  content: '';
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  width: 120%;
+  height: 120%;
+  background: radial-gradient(ellipse 130% 120% at 44% 42%, rgba(220, 202, 194, 0.18) 0%, rgba(246, 241, 234, 0.06) 55%, rgba(15, 11, 9, 0) 100%);
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 1;
+  transform: translate(0, 0) scale(1.0);
+  will-change: transform, opacity;
+  /* Heavy exit transition for focus breathing */
+  transition: opacity 4.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.scene-2-container.active::before {
+  animation: atmosphere-breath 32s cubic-bezier(0.33, 0.82, 0.68, 1) infinite;
+}
+
+.scene-2-container.active:hover::before,
+.scene-2-container.active.interacting::before {
+  opacity: 0.25;
+  /* Heavy entry transition for focus breathing */
+  transition: opacity 3.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* 
+  Staggered Cinematic Reveal Reveal Mechanics 
+*/
+.scene-2-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* 
+  Water Caustic Atmosphere Layer
+  Environmental cinematic light behavior — NOT visible water.
+  Sits beneath all typography as warm, shifting caustic light on paper.
+*/
+.caustic-atmosphere-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0; /* Lowest layer — beneath all typography (z-index 2-3) */
+  pointer-events: none;
+  opacity: 0; /* Invisible until Scene 2 settles */
+  /* Warm color & blur treatment: eliminate blue tones, dissolve sharpness/flowers completely */
+  filter: sepia(0.35) brightness(1.1) saturate(0.5) contrast(0.8) blur(6px);
+  /* Heavy, cinematic emergence — editorial stillness first, then life */
+  transition: opacity 6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Delayed reveal state — activated by JS after Scene 2 has settled */
+.caustic-atmosphere-wrapper.emerged {
+  opacity: 0.12; /* 12% — extremely restrained, felt as environmental warmth */
+}
+
+.caustic-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 2.5s ease-in-out; /* Smooth 2.5s crossfade between A and B */
+  will-change: opacity;
+}
+
+.caustic-layer.active {
+  opacity: 1;
+}
+
+.scene-2-header {
+  opacity: 0;
+  position: absolute;
+  top: 10.5vh;
+  top: 10.5dvh;
+  left: 50%;
+  width: 62vw;
+  transform: translate(-50%, 0);
+  transition: opacity 4.5s cubic-bezier(0.25, 1, 0.5, 1) 0.15s;
+  z-index: 2;
+  will-change: transform, opacity;
+}
+
+.editorial-names-wrapper {
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform: translateY(0);
+  transition: opacity 4.5s cubic-bezier(0.25, 1, 0.5, 1) 0.4s;
+  z-index: 3;
+  will-change: transform, opacity;
+}
+
+.scene-2-footer {
+  opacity: 0;
+  position: absolute;
+  top: 86vh;
+  top: 86dvh;
+  left: 50%;
+  width: 100%;
+  transform: translate(-50%, 0);
+  transition: opacity 4.5s cubic-bezier(0.25, 1, 0.5, 1) 0.8s;
+  z-index: 2;
+  will-change: transform, opacity;
+}
+
+/* Activate states triggered via JS class application */
+.scene-2-container.active .scene-2-header {
+  opacity: 0.85;
+  transform: translate(-50%, 0);
+  transition: opacity 4.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.scene-2-container.active .editorial-names-wrapper {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: opacity 4.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.scene-2-container.active .scene-2-footer {
+  opacity: 0.85;
+  transform: translate(-50%, 0);
+  transition: opacity 4.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* 
+  Scene 3 — Editorial Date Canvas
+  Full-viewport container, hidden until activated.
+  Transform + opacity driven by JS cinematic scroll engine.
+*/
+.scene-3-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  background-color: #F5F2EB; /* Matches the global warm ivory document background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: -1;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity, transform;
+  transition: opacity 0.1s linear;
+}
+
+.scene-3-container.active {
+  z-index: 20; /* Positioned above Scene 4 when Scene 3 is active */
+  pointer-events: auto;
+}
+
+/* 
+  Scene 3 Asymmetrical Editorial Layout (Portrait Mobile Default)
+  Typography remains dominant in the foreground.
+  Champagne sequence sits behind and below.
+*/
+.scene3-champagne-sequence {
+  position: absolute;
+  left: 68%;
+  top: 55%;
+  transform: translate(-50%, -50%);
+  height: 50vh;
+  width: auto;
+  z-index: 10; /* Layer 2: Champagne Image Sequence */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.champagne-sequence-img {
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.scene-3-content {
+  position: absolute;
+  top: 18vh;
+  left: 5vw;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  z-index: 15; /* Layer 3: Date Typography (dominant) */
+  box-sizing: border-box;
+}
+
+.s3-save-date {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 300;
+  font-size: clamp(9px, 2.5vw, 11px);
+  letter-spacing: 0.35em;
+  color: #8A6F63;
+  opacity: 0.85;
+  margin-bottom: clamp(15px, 4vh, 25px);
+  text-transform: uppercase;
+}
+
+.s3-date-lockup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
+}
+
+.s3-date-row {
+  font-family: 'SaolDisplay', 'Saol Display', serif;
+  font-weight: normal;
+  line-height: 0.8; /* Replicate exact font baseline tension */
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+
+.s3-date-day {
+  font-size: clamp(115px, 26vw, 175px);
+  color: #3A120F; /* Primary Deep Matte Burgundy ink (sharp, solid) */
+  z-index: 1;
+  position: relative;
+}
+
+.s3-date-month {
+  font-size: clamp(80px, 18.5vw, 125px);
+  color: rgba(138, 111, 99, 0.58); /* Only the month layer uses transparency */
+  letter-spacing: 0.16em;
+  margin-top: -0.28em; /* Overlap tension bottom of 12 */
+  margin-bottom: -0.24em; /* Overlap tension top of 2026 */
+  z-index: 2; /* Sits on top of day and year to overlap them perfectly */
+  position: relative;
+}
+
+.s3-date-year {
+  font-size: clamp(115px, 26vw, 175px);
+  color: #3A120F; /* Primary Deep Matte Burgundy ink (sharp, solid) */
+  z-index: 1;
+  position: relative;
+}
+
+.s3-time-tag {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 300;
+  font-size: clamp(9px, 2.5vw, 11px);
+  letter-spacing: 0.35em;
+  color: #8A6F63;
+  opacity: 0.85;
+  margin-top: clamp(15px, 4vh, 25px);
+  text-transform: uppercase;
+}
+
+/* 
+  Scene 3 — Live Countdown Timer
+  Quiet supporting luxury editorial styling.
+*/
+.s3-countdown {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap; /* Supports responsive wrapping on small mobile screens */
+  gap: 1rem;
+  margin-top: clamp(12px, 3vh, 20px); /* Cozy separation beneath the footer */
+  box-sizing: border-box;
+}
+
+.s3-countdown-item {
+  display: flex;
+  align-items: baseline; /* Align values and labels beautifully along the font baseline */
+  gap: 0.25rem;
+}
+
+.s3-countdown-value {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 500;
+  font-size: clamp(1.05rem, 3vw, 1.25rem);
+  color: #3A120F; /* Primary Burgundy */
+  line-height: 1;
+  letter-spacing: -0.01em;
+  min-width: 1.8ch; /* Keeps spacing stable when numbers tick */
+  text-align: right;
+}
+
+
+
+.s3-countdown-label {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 400;
+  font-size: clamp(8px, 1.8vw, 9px);
+  color: #8A6F63; /* Secondary Mocha */
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+/* 
+  Scene 4 — Elegant Future Canvas
+  Full-viewport container, hidden until activated.
+  Prepped for smooth hardware-accelerated transitions.
+*/
+.scene-4-container {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  background-color: #F5F2EB; /* Matches the global warm ivory document background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: -1;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: opacity;
+}
+
+.scene-4-container.active {
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 28; /* Placed cleanly above Scene 3 and supporting overlays when settled */
+}
+
+.scene-4-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   SCENE 4 — "THE DAY ITSELF" WEDDING TIMELINE
+   ────────────────────────────────────────────────────────────────────────── */
+
+.s4-timeline-layout {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3; /* Sits strictly behind the heading (z-index 5) but in front of 3D butterfly (z-index 2) */
+  pointer-events: auto; /* Enable hover/clicks on cards */
+  overflow: visible;
+  will-change: opacity;
+}
+
+.s4-heading-wrapper {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 52%;
+  max-width: 52%; 
+  height: clamp(60px, 12vh, 120px); /* APPROVED: Height constraint */
+  z-index: 5; /* Sits in front of butterflies (4) but behind timeline layout (7) */
+  pointer-events: auto; /* Clickable */
+  cursor: pointer; /* Pointer on hover */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: visible;
+  will-change: transform, opacity;
+}
+
+.s4-main-heading {
+  font-family: 'Eline Novika', 'SaolDisplay', sans-serif;
+  font-weight: 400;
+  color: transparent;
+  -webkit-text-stroke: 0.9px #4A241F;
+  text-align: center;
+  letter-spacing: 0.07em;
+  line-height: 1;
+  margin: 0;
+  z-index: 2; /* Sits in front of background */
+  opacity: 1; /* Fully visible vector plain text by default */
+  will-change: opacity, transform;
+  text-shadow: none;
+  pointer-events: auto; /* Clickable */
+  cursor: pointer;
+  font-size: clamp(2.2rem, 4.8vw, 4.8rem);
+  width: 100%;
+  filter: drop-shadow(0px 8px 14px rgba(74, 36, 31, 0.26));
+}
+
+@media (max-width: 767px) {
+  .s4-main-heading {
+    font-size: clamp(1.8rem, 6vw, 2.8rem);
+  }
+}
+
+/* Timeline Card Container */
+.s4-card-container {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%) scale(1);
+  z-index: 6;
+  box-sizing: border-box;
+  will-change: opacity, transform;
+  margin: 0 auto;
+  
+  /* Dynamic Dimensions: sits comfortably inside the arch opening columns (opening is ~48%) */
+  width: 62%;
+  max-width: 560px;
+  min-height: 200px;
+}
+
+#s4-card-1 { top: 20%; }
+#s4-card-2 { top: 50%; }
+#s4-card-3 { top: 80%; }
+
+/* Glassmorphic card content */
+.s4-card-content {
+  position: relative;
+  width: 100%;
+  min-height: 200px;
+  background: rgba(255, 255, 255, 0.28); /* Glassmorphic background */
+  border: 1px solid rgba(255, 255, 255, 0.35); /* Glassmorphic border */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 18px; /* 18px border radius */
+  padding: 1.05rem 1.55rem;
+  box-sizing: border-box;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  opacity: 0.0; /* Start hidden for progressive scroll fade-in */
+  transform: scale(0.9);
+  will-change: opacity, transform;
+  transition: background-color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease;
+}
+
+.s4-card-content::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.12) 50%, transparent 70%);
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0.35s ease;
+}
+
+/* Widescreen: increase card size for large viewports */
+@media (min-width: 1200px) {
+  .s4-card-container {
+    width: 48%;
+    max-width: 560px;
+  }
+  .s4-card-content {
+    border-radius: 24px;
+    padding: 1.4rem 1.9rem;
+  }
+}
+
+/* Mobile: centered flex-column layout with even breathing room */
+@media (max-width: 767px) {
+  /* Override the absolute column wrapper to be a centered flex container */
+  .s4-column.s4-column-left {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .s4-timeline-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    width: 100%;
+    padding: 0 16px;
+  }
+
+  /* Cards become relative flow items (not absolute) on mobile */
+  .s4-card-container {
+    position: relative;
+    left: auto;
+    top: auto !important;
+    transform: none;
+    width: 92%;
+    max-width: 420px;
+    min-height: 160px;
+  }
+
+  .s4-card-content {
+    min-height: 160px;
+    border-radius: 16px;
+    padding: 1.1rem 1.3rem;
+  }
+  .s4-card-event-title {
+    font-size: clamp(1.0rem, 4.5vw, 1.15rem);
+  }
+  .s4-card-event-time {
+    font-size: clamp(0.60rem, 3.2vw, 0.7rem);
+  }
+  #butterfly-canvas {
+    width: 75%;
+    height: 38%;
+  }
+}
+
+/* Card details typography */
+.s4-card-event-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 500;
+  font-size: clamp(1.15rem, 1.8vw, 1.25rem);
+  color: #3A120F; /* Matte Burgundy */
+  margin: 0 0 0.15rem 0;
+  line-height: 1.2;
+}
+
+.s4-card-event-time {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 400;
+  font-size: clamp(0.68rem, 1.1vw, 0.72rem);
+  color: #8A6F63; /* Soft Mocha */
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin: 0 0 0.2rem 0;
+}
+
+.s4-card-event-tag {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(0.95rem, 1.5vw, 1.05rem);
+  color: #8A6F63;
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* Scroll Activation Styling: lit up box effect */
+.s4-card-container.active .s4-card-content {
+  background: rgba(255, 255, 255, 0.55);
+  border-color: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 20px 45px rgba(58, 18, 15, 0.08);
+}
+
+.s4-card-container.active .s4-card-content::before {
+  opacity: 1;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   BUTTERFLIES LAYER & FLOATING SYSTEM
+   ────────────────────────────────────────────────────────────────────────── */
+
+#butterfly-canvas {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 58%;
+  height: 42%;
+  transform: translate(-50%, -50%);
+  z-index: 4 !important; /* Flying in front of timeline cards (z-index 3), behind heading (z-index 5) */
+  pointer-events: none;
+  border-radius: 40px;
+  overflow: hidden;
+}
+
+/* Butterflies 3D model (handled by butterfly.js / Three.js) */
+
+
+/* Layer 5: Future Atmospheric Veil (Placeholder) */
+.scene3-atmosphere-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 25;
+  pointer-events: none;
+}
+
+/* 
+  Landscape Viewport Adaptation (Desktop) 
+  Translates Scene 3 into widescreen proportions with luxury negative space.
+  Date occupies the left side. Champagne occupies the right side (visual counterbalance).
+*/
+@media (orientation: landscape) {
+  .scene-3-content {
+    top: 13vh;
+    left: 12vw;
+    width: 35vw;
+    height: auto;
+  }
+
+  .s3-save-date {
+    font-size: clamp(11px, 1.5vh, 13px);
+    letter-spacing: 0.42em;
+    margin-bottom: clamp(20px, 4.5vh, 45px);
+  }
+
+  .s3-date-day {
+    font-size: clamp(140px, 25vh, 220px);
+  }
+
+  .s3-date-month {
+    font-size: clamp(100px, 17.5vh, 155px);
+    letter-spacing: 0.18em;
+  }
+
+  .s3-date-year {
+    font-size: clamp(140px, 25vh, 220px);
+  }
+
+  .s3-time-tag {
+    font-size: clamp(11px, 1.5vh, 13px);
+    letter-spacing: 0.42em;
+    margin-top: clamp(20px, 4.5vh, 45px);
+  }
+
+  .scene3-champagne-sequence {
+    right: 10vw;
+    left: auto;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 72vh;
+  }
+
+  .s3-countdown {
+    gap: 1.5rem;
+    margin-top: clamp(20px, 4.5vh, 40px);
+  }
+
+  .s3-countdown-value {
+    font-size: clamp(1.2rem, 2.5vh, 1.45rem);
+  }
+
+  .s3-countdown-label {
+    font-size: clamp(9px, 1.2vh, 10px);
+    letter-spacing: 0.28em;
+  }
+}
+
+
+/* 
+  Supporting Typography Styling 
+*/
+.invite-text {
+  text-transform: uppercase;
+  font-family: 'SaolDisplay', 'Luxury Model', sans-serif;
+  text-align: center;
+  font-weight: 300;
+}
+
+.mobile-invite {
+  display: block;
+  font-size: 0.72rem; /* Restored to exact locked Figma blueprint scale */
+  letter-spacing: 0.34em;
+  line-height: 2.1;
+  color: #8A6F63;
+  opacity: 0.72;
+  
+  /* Soft environmental cinematic grounding shadows */
+  text-shadow: 0 4px 12px rgba(42, 14, 11, 0.04);
+}
+
+.desktop-invite {
+  display: none;
+  
+  /* Soft environmental cinematic grounding shadows */
+  text-shadow: 0 4px 12px rgba(42, 14, 11, 0.04);
+}
+
+/* 
+  Names & Asymmetrical Editorial Composition 
+*/
+.name-block {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.first-name, .last-name {
+  font-family: 'SaolDisplay', 'Glirock', serif;
+  line-height: 0.82;
+  font-size: clamp(3.0rem, 14vw, 4.2rem);
+  letter-spacing: -0.01em;
+  font-weight: 400;
+  white-space: nowrap;
+  will-change: transform;
+  
+  /* Pristine Deep Matte Burgundy Typography — Calm, Stable, & Monumental */
+  color: #3A120F; /* Primary Deep Matte Burgundy ink */
+  
+  /* Soft environmental cinematic grounding shadows */
+  text-shadow:
+    0 0.5px 1px rgba(58, 18, 15, 0.15),   /* Ink absorption edge realism */
+    0 4px 12px rgba(42, 14, 11, 0.06);    /* Diffused warm grounding shadow */
+}
+
+.scene-2-container.active .first-name,
+.scene-2-container.active .last-name {
+  animation: foreground-breath 24s cubic-bezier(0.28, 0.84, 0.42, 1) infinite;
+}
+
+/* Delicate overlap first letter setup */
+.editorial-letter {
+  position: relative;
+  display: inline-block;
+  margin-left: 0.1em;
+}
+
+.letter-bg {
+  display: none; /* Hide background initial outlines to maintain crisp, sharp, non-effect-treated editorial typography */
+}
+
+.letter-main {
+  position: relative;
+  font-weight: 400; /* Unified Regular thin weight */
+  z-index: 2;
+}
+
+/* Mobile Stack Configuration (Portrait Default) */
+.groom-block {
+  position: absolute;
+  top: 31vh;
+  top: 31dvh;
+  left: 7vw; /* Restored to exact locked Figma blueprint left offset */
+}
+
+.groom-block .first-name {
+  font-size: clamp(4.3rem, 11vw, 5.8rem);
+  line-height: 0.82; /* Restored to locked Figma value */
+  letter-spacing: -0.045em;
+}
+
+.groom-block .last-name {
+  margin-left: 15vw; /* Restored to locked Figma margin tuck */
+  font-size: clamp(3.8rem, 9vw, 4.7rem);
+  line-height: 0.88; /* Restored to locked Figma value */
+  letter-spacing: -0.04em;
+  margin-top: 0.8vh; /* Lock vertical collision gap safety */
+}
+
+.ampersand-divider {
+  position: absolute;
+  top: 52vh;
+  top: 52dvh; /* Restored to exact locked Figma center coordinate */
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-weight: 300;
+  font-size: 1.7rem;
+  
+  /* Stable, grounded matte burgundy ampersand */
+  color: #521B17; /* Secondary Burgundy Depth (#521B17) */
+  opacity: 1; /* Fully solid, grounded, and emotionally authoritative */
+  will-change: transform;
+}
+
+.scene-2-container.active .ampersand-divider {
+  animation: ampersand-breath 24s cubic-bezier(0.28, 0.84, 0.42, 1) infinite;
+}
+
+.bride-block {
+  position: absolute;
+  top: 60vh;
+  top: 60dvh; /* Restored to exact locked Figma center coordinate */
+  right: 6vw; /* Restored to exact locked Figma right offset */
+  text-align: left;
+}
+
+.bride-block .first-name {
+  font-size: clamp(4rem, 10vw, 5.4rem);
+  letter-spacing: -0.05em;
+  line-height: 0.82; /* Restored to locked Figma value */
+}
+
+.bride-block .last-name {
+  margin-left: 16vw; /* Restored to locked Figma tuck margin */
+  font-size: clamp(3.7rem, 8vw, 4.5rem);
+  line-height: 0.88; /* Restored to locked Figma value */
+  margin-top: 0.8vh; /* Lock vertical collision gap safety */
+}
+
+/* Footer & Restrained Dot/Line Divider */
+.date-location-line {
+  font-family: 'SaolDisplay', 'VogueModerne', sans-serif;
+  text-transform: uppercase;
+  font-size: 0.66rem; /* Restored to exact locked Figma blueprint scale */
+  letter-spacing: 0.28em;
+  color: #8A6F63;
+  font-weight: 300;
+  text-align: center;
+  opacity: 0.68;
+  
+  /* Soft environmental cinematic grounding shadows */
+  text-shadow: 0 4px 12px rgba(42, 14, 11, 0.04);
+}
+
+.scroll-divider {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 3.5vh;
+  gap: 10px;
+}
+
+.divider-line {
+  width: 1px;
+  height: clamp(30px, 6vh, 50px);
+  background-color: #8A6F63; /* Mocha Accent */
+  opacity: 0.22;
+}
+
+.divider-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: #8A6F63; /* Mocha Accent */
+  opacity: 0.35;
+}
+
+/* 
+  Narrow Mobile Viewport Optimization
+  Prevents long names and tucked margins from wrapping or colliding on very small portrait screens (<= 360px)
+*/
+@media (max-width: 360px) {
+  .groom-block .first-name {
+    font-size: clamp(3.4rem, 10vw, 4.2rem);
+  }
+  .groom-block .last-name {
+    font-size: clamp(3.0rem, 8vw, 3.6rem);
+    margin-left: 10vw;
+  }
+  .bride-block .first-name {
+    font-size: clamp(3.2rem, 9vw, 4.0rem);
+  }
+  .bride-block .last-name {
+    font-size: clamp(2.8rem, 7vw, 3.4rem);
+    margin-left: 11vw;
+  }
+}
+
+
+
+/* 
+  Landscape Viewport Adaptation (Desktop) 
+  Translates the stack into a gorgeous widescreen editorial spread
+*/
+@media (orientation: landscape) {
+  .scene-2-header {
+    top: 3.8vh;
+    width: 34vw;
+  }
+
+  .desktop-invite {
+    display: block;
+    font-size: 0.72rem; /* Restored to exact locked Figma blueprint scale */
+    letter-spacing: 0.42em;
+    line-height: 2.1;
+    opacity: 0.74;
+    color: #8A6F63;
+  }
+
+  .mobile-invite {
+    display: none;
+  }
+
+  /* Absolute position blocks inside the Names Canvas */
+  .editorial-names-wrapper {
+    display: block; /* Overrides mobile stacked flow */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .groom-block {
+    position: absolute;
+    top: 16vh;
+    left: 24vw; /* Restored to exact locked Figma blueprint left offset */
+    width: 42vw;
+  }
+
+  .groom-block .first-name {
+    font-size: clamp(7rem, 9vw, 10rem);
+    line-height: 0.78; /* Restored to locked Figma value */
+    letter-spacing: -0.055em;
+  }
+
+  .groom-block .last-name {
+    margin-left: 8vw;
+    margin-top: -1.6vh; /* Restored to locked Figma tuck margin (line overlap protection) */
+    font-size: clamp(6.4rem, 7vw, 8rem);
+    line-height: 0.78;
+  }
+
+  .ampersand-divider {
+    position: absolute;
+    top: 48vh;
+    left: 47vw; /* Restored to exact locked Figma optical center coords */
+    font-size: 2rem;
+    opacity: 1; /* Fully solid, grounded, and emotionally authoritative */
+    margin: 0;
+  }
+
+  .bride-block {
+    position: absolute;
+    top: 49vh; /* Restored to exact locked Figma center coordinate */
+    right: 13vw; /* Restored to exact locked Figma right offset */
+    width: 40vw;
+    text-align: left;
+  }
+
+  .bride-block .first-name {
+    font-size: clamp(7rem, 8vw, 9rem);
+    letter-spacing: -0.06em;
+    line-height: 0.78; /* Restored to locked Figma value */
+  }
+
+  .bride-block .last-name {
+    margin-left: 13vw;
+    margin-top: -1.8vh; /* Restored to locked Figma tuck margin (line overlap protection) */
+    font-size: clamp(6rem, 6vw, 7.2rem);
+    line-height: 0.78;
+  }
+
+  .scene-2-footer {
+    top: 88vh;
+  }
+
+  .date-location-line {
+    font-size: 0.72rem; /* Restored to exact locked Figma blueprint scale */
+    letter-spacing: 0.36em;
+    
+    /* Soft environmental cinematic grounding shadow override */
+    text-shadow: 0 5px 15px rgba(42, 14, 11, 0.05);
+  }
+
+  .scroll-divider {
+    margin-top: 2.5vh;
+  }
+
+  .scene-2-container.active .first-name,
+  .scene-2-container.active .last-name {
+    animation: foreground-breath 24s cubic-bezier(0.28, 0.84, 0.42, 1) infinite;
+  }
+
+  .ampersand-divider {
+    color: #521B17;
+    opacity: 1; /* Fully solid, grounded, and emotionally authoritative */
+    text-shadow: none;
+  }
+}
+
+/* 
+  Cinematic Transition Fog (White Cloud/Fog)
+  Used at exactly 5.08s to bring a dreamlike, soft, and seamless transition.
+  Set to exact Figma Warm Ivory tone (#F6F1EA) to melt into Scene 2 perfectly.
+*/
+.cinematic-transition-fog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1; /* Kept behind the video to prevent mobile z-index touch interception */
+  pointer-events: none; /* Let interactions pass through naturally unless active */
+  background: radial-gradient(
+    circle at center,
+    rgba(246, 241, 234, 0) 0%,
+    rgba(246, 241, 234, 0.7) 50%,
+    rgba(246, 241, 234, 1) 95%
+  );
+  background-color: #F6F1EA; /* Solid fallback matching Figma background */
+  opacity: 0;
+  transition: opacity 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.cinematic-transition-fog.active {
+  z-index: 30; /* Elevate to the top during active transition */
+  opacity: 1;
+  pointer-events: auto; /* Prevent interaction during active transition */
+}
+
+/* 
+  Mobile Portrait Fog Adaptation 
+  Adjusts the radial gradient focal region to match the vertical 9:16 aspect ratio beautifully.
+*/
+@media (orientation: portrait) {
+  .cinematic-transition-fog {
+    background: radial-gradient(
+      ellipse at center,
+      rgba(246, 241, 234, 0) 0%,
+      rgba(246, 241, 234, 0.75) 45%,
+      rgba(246, 241, 234, 1) 90%
+    );
+    background-color: #F6F1EA;
+  }
+}
+
+/* 
+  Asymmetrical High-Performance Environmental Breathing Engines
+  Uses unique coordinate pathways, prime cycle durations, and custom ease-curves
+*/
+
+@keyframes atmosphere-breath {
+  0% {
+    transform: translate(0, 0) scale(1.0);
+    opacity: 0.12;
+  }
+  40% {
+    transform: translate(0.6%, -0.5%) scale(1.008);
+    opacity: 0.16;
+  }
+  75% {
+    transform: translate(-0.4%, 0.3%) scale(0.996);
+    opacity: 0.13;
+  }
+  100% {
+    transform: translate(0, 0) scale(1.0);
+    opacity: 0.12;
+  }
+}
+
+@keyframes foreground-breath {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  30% {
+    transform: translateY(-0.1px) scale(1.0003); /* Imperceptible inhale */
+  }
+  65% {
+    transform: translateY(-0.22px) scale(0.9998);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes ampersand-breath {
+  0% {
+    transform: translate(-50%, -50%);
+  }
+  35% {
+    transform: translate(-50%, calc(-50% - 0.12px));
+  }
+  70% {
+    transform: translate(-50%, calc(-50% - 0.28px));
+  }
+  100% {
+    transform: translate(-50%, -50%);
+  }
+}
+
+@keyframes overlap-drift {
+  0% {
+    transform: translate(0, 0);
+  }
+  45% {
+    transform: translate(-0.16px, 0.06px);
+  }
+  80% {
+    transform: translate(0.10px, -0.04px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   PORTAL ARCH GATEWAY STYLING
+   Creates a majestic foreground arch gateway that scales up past the screen
+   ────────────────────────────────────────────────────────────────────────── */
+
+.s4-arch-wrapper {
+  position: absolute;
+  top: 3vh; /* Move the arch slightly lower to reduce top negative space */
+  bottom: auto;
+  left: 50%;
+  transform: translateX(-50%) scale(1);
+  z-index: 10; /* Main stage layer container (contains heading at 5, cards at 7, arch at 10) */
+  pointer-events: none;
+  overflow: visible; /* Prevent arch floral edge cropping */
+  display: flex;
+  justify-content: center;
+  align-items: flex-end; /* Pin to bottom of wrapper */
+  transform-origin: 50% 50%; /* Center origin for cinematic walk-in stage zoom */
+  will-change: transform, opacity;
+  container-type: inline-size;
+  
+  /* Desktop geometry */
+  height: 92vh; /* Increased for more breathing room */
+  aspect-ratio: 2 / 3; /* Proportional locked aspect ratio */
+  width: auto;
+  max-width: 90vw;
+}
+
+@media (max-width: 767px) {
+  .s4-arch-wrapper {
+    height: 76vh; /* Increased for more breathing room */
+    width: auto;
+    aspect-ratio: 2 / 3; /* Proportional locked aspect ratio */
+    max-width: 88vw; /* Proportional width limit */
+    top: 12vh; /* Adjusted for new height */
+    bottom: auto;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+.s4-arch-img {
+  position: relative;
+  z-index: 10;
+  height: 100%; /* Take full vertical height of wrapper */
+  width: auto;
+  display: block;
+  object-fit: contain;
+  /* No shadows, no movements, no floating animations on the image itself */
+  filter: none;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   SCENE 5 — RSVP & CELEBRATION VENUE PAGE
+   A perfectly centered, symmetrical stationery card page with luxury buttons
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* 
+  Blocked Layers:
+  Hides the original 2D butterflies layer completely.
+*/
+/* ──────────────────────────────────────────────────────────────────────────
+   SCENE 5 — VENUE & RSVP (Two-Column Luxury Layout)
+   ────────────────────────────────────────────────────────────────────────── */
+
+.scene-5-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  background-color: #F3ECE7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: -1;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
+  transition: opacity 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+  overflow: hidden;
+}
+
+.scene-5-container.active {
+  z-index: 35;
+  pointer-events: auto;
+}
+
+/* Main layout — mobile-first single column, lg breakpoint for 2-column */
+.s5-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+  max-width: 100%;
+  width: 100%;
+  padding: 64px 16px;
+  margin: 0 auto;
+}
+
+/* sm: 640px */
+@media (min-width: 640px) {
+  .s5-layout {
+    padding: 64px 24px;
+  }
+}
+
+/* md: 768px */
+@media (min-width: 768px) {
+  .s5-layout {
+    padding: 80px 32px;
+  }
+}
+
+/* lg: 1024px — two-column grid activates */
+@media (min-width: 1024px) {
+  .s5-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    max-width: 1400px;
+    padding: 96px 48px;
+  }
+}
+
+/* xl: 1280px */
+@media (min-width: 1280px) {
+  .s5-layout {
+    gap: 80px;
+    padding: 96px 60px;
+  }
+}
+
+/* LEFT COLUMN — Venue Details */
+.s5-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 24px;
+}
+
+/* sm: 640px */
+@media (min-width: 640px) {
+  .s5-left {
+    gap: 28px;
+  }
+}
+
+/* lg: 1024px */
+@media (min-width: 1024px) {
+  .s5-left {
+    gap: 36px;
+  }
+}
+
+.s5-header-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* md: 768px */
+@media (min-width: 768px) {
+  .s5-header-group {
+    gap: 12px;
+  }
+}
+
+/* lg: 1024px */
+@media (min-width: 1024px) {
+  .s5-header-group {
+    gap: 16px;
+  }
+}
+
+.s5-label {
+  display: block;
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #8a817b;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* sm: 640px */
+@media (min-width: 640px) {
+  .s5-label {
+    font-size: 12px;
+  }
+}
+
+.s5-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 400;
+  line-height: 1;
+  color: #1d1d1d;
+  margin: 0;
+  font-size: 36px;
+}
+
+/* sm: 640px */
+@media (min-width: 640px) {
+  .s5-title {
+    font-size: clamp(48px, 5vw, 60px);
+  }
+}
+
+/* md: 768px */
+@media (min-width: 768px) {
+  .s5-title {
+    font-size: clamp(60px, 6vw, 72px);
+  }
+}
+
+/* lg: 1024px */
+@media (min-width: 1024px) {
+  .s5-title {
+    font-size: clamp(72px, 7vw, 96px);
+  }
+}
+
+.s5-venue-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.s5-venue-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #4B2E2B;
+  margin: 0;
+  line-height: 1.3;
+}
+
+/* sm: 640px */
+@media (min-width: 640px) {
+  .s5-venue-name {
+    font-size: 18px;
+  }
+}
+
+/* lg: 1024px */
+@media (min-width: 1024px) {
+  .s5-venue-name {
+    font-size: 20px;
+  }
+}
+
+.s5-address {
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  color: #8C7B70;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0 16px;
+}
+
+/* sm: 640px */
+@media (min-width: 640px) {
+  .s5-address {
+    font-size: 16px;
+    padding: 0;
+  }
+}
+
+.s5-action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+/* sm: 640px — buttons go side-by-side */
+@media (min-width: 640px) {
+  .s5-action-buttons {
+    flex-direction: row;
+    gap: 16px;
+    margin-top: 12px;
+  }
+}
+
+/* RIGHT COLUMN — RSVP Form */
+.s5-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.s5-rsvp-card {
+  background: #FAF6F1;
+  border-radius: 16px;
+  padding: 24px 16px;
+  box-shadow: 0 10px 40px rgba(58, 18, 15, 0.12);
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  transition: all 0.3s ease;
+}
+
+/* sm: 640px */
+@media (min-width: 640px) {
+  .s5-rsvp-card {
+    padding: 28px 24px;
+    max-width: 480px;
+  }
+}
+
+/* md: 768px */
+@media (min-width: 768px) {
+  .s5-rsvp-card {
+    padding: 32px 28px;
+  }
+}
+
+/* lg: 1024px */
+@media (min-width: 1024px) {
+  .s5-rsvp-card {
+    padding: 32px 40px;
+    max-width: 100%;
+    box-shadow: 0 10px 40px rgba(58, 18, 15, 0.12);
+  }
+}
+
+.s5-rsvp-card:hover {
+  box-shadow: 0 20px 60px rgba(58, 18, 15, 0.18);
+  transform: translateY(-4px);
+}
+
+.s5-rsvp-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+/* md: 768px */
+@media (min-width: 768px) {
+  .s5-rsvp-header {
+    margin-bottom: 24px;
+  }
+}
+
+/* lg: 1024px */
+@media (min-width: 1024px) {
+  .s5-rsvp-header {
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+}
+
+.s5-rsvp-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: #4B2E2B;
+  margin: 0;
+}
+
+/* md: 768px */
+@media (min-width: 768px) {
+  .s5-rsvp-title {
+    font-size: 28px;
+  }
+}
+
+/* lg: 1024px */
+@media (min-width: 1024px) {
+  .s5-rsvp-title {
+    font-size: 32px;
+  }
+}
+
+.s5-rsvp-subtitle {
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-weight: 300;
+  color: #8C7B70;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* md: 768px */
+@media (min-width: 768px) {
+  .s5-rsvp-subtitle {
+    font-size: 14px;
+  }
+}
+
+/* Form Styles */
+.s5-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* md: 768px */
+@media (min-width: 768px) {
+  .s5-form {
+    gap: 18px;
+  }
+}
+
+/* lg: 1024px */
+@media (min-width: 1024px) {
+  .s5-form {
+    gap: 24px;
+  }
+}
+
+.s5-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.s5-form-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #8C7B70;
+  font-weight: 500;
+}
+
+/* md: 768px */
+@media (min-width: 768px) {
+  .s5-form-label {
+    font-size: 12px;
+  }
+}
+
+.s5-form-group input,
+.s5-form-group select,
+.s5-form-group textarea {
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  color: #4B2E2B;
+  padding: 10px 12px;
+  border: 1px solid #E5DED8;
+  border-radius: 8px;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+/* sm: 640px */
+@media (min-width: 640px) {
+  .s5-form-group input,
+  .s5-form-group select,
+  .s5-form-group textarea {
+    padding: 10px 12px;
+  }
+}
+
+/* md: 768px */
+@media (min-width: 768px) {
+  .s5-form-group input,
+  .s5-form-group select,
+  .s5-form-group textarea {
+    padding: 12px 14px;
+  }
+}
+
+/* lg: 1024px */
+@media (min-width: 1024px) {
+  .s5-form-group input,
+  .s5-form-group select,
+  .s5-form-group textarea {
+    font-size: 16px;
+    padding: 12px 16px;
+  }
+}
+
+.s5-form-group input:focus,
+.s5-form-group select:focus,
+.s5-form-group textarea:focus {
+  outline: none;
+  border-color: #8C7B70;
+  box-shadow: 0 0 0 3px rgba(140, 123, 112, 0.1);
+}
+
+.s5-form-group input::placeholder,
+.s5-form-group textarea::placeholder {
+  color: #B8A89C;
+}
+
+.s5-form-group textarea {
+  font-family: 'Outfit', sans-serif;
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Radio Group */
+.s5-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.s5-radio-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  color: #4B2E2B;
+  gap: 8px;
+  transition: all 0.2s ease;
+  padding: 4px 0;
+}
+
+/* md: 768px */
+@media (min-width: 768px) {
+  .s5-radio-label {
+    font-size: 13px;
+  }
+}
+
+.s5-radio-label input {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #3A120F;
+}
+
+.s5-radio-label:hover {
+  color: #3A120F;
+}
+
+/* Buttons */
+.s5-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 24px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  white-space: nowrap;
+  width: 100%;
+}
+
+/* sm: 640px */
+@media (min-width: 640px) {
+  .s5-btn {
+    height: 48px;
+    padding: 0 32px;
+    font-size: 12px;
+    width: auto;
+  }
+}
+
+/* lg: 1024px */
+@media (min-width: 1024px) {
+  .s5-btn {
+    height: 56px;
+    padding: 0 32px;
+    font-size: 14px;
+  }
+}
+
+.s5-icon {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+}
+
+/* sm: 640px */
+@media (min-width: 640px) {
+  .s5-icon {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* lg: 1024px */
+@media (min-width: 1024px) {
+  .s5-icon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.s5-btn-primary {
+  background: #3A120F;
+  color: white;
+  box-shadow: 0 4px 12px rgba(58, 18, 15, 0.2);
+}
+
+.s5-btn-primary:hover {
+  background: #4B2E2B;
+  box-shadow: 0 12px 32px rgba(58, 18, 15, 0.3);
+  transform: translateY(-3px);
+}
+
+.s5-btn-primary:active {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(58, 18, 15, 0.2);
+}
+
+.s5-btn-secondary {
+  background: transparent;
+  color: #3A120F;
+  border: 1.5px solid #3A120F;
+  box-shadow: 0 4px 12px rgba(58, 18, 15, 0.1);
+}
+
+.s5-btn-secondary:hover {
+  background: #3A120F;
+  color: white;
+  box-shadow: 0 12px 32px rgba(58, 18, 15, 0.3);
+  transform: translateY(-3px);
+}
+
+.s5-btn-submit {
+  background: #3A120F;
+  color: white;
+  width: 100%;
+  margin-top: 6px;
+  box-shadow: 0 4px 12px rgba(58, 18, 15, 0.2);
+  height: 48px;
+  padding: 0 24px;
+  font-size: 12px;
+}
+
+/* md: 768px */
+@media (min-width: 768px) {
+  .s5-btn-submit {
+    margin-top: 8px;
+    height: 48px;
+  }
+}
+
+/* lg: 1024px */
+@media (min-width: 1024px) {
+  .s5-btn-submit {
+    height: 56px;
+    padding: 0 32px;
+    font-size: 14px;
+  }
+}
+
+.s5-btn-submit:hover {
+  background: #4B2E2B;
+  box-shadow: 0 12px 32px rgba(58, 18, 15, 0.3);
+  transform: translateY(-2px);
+}
+
+.s5-btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* MODAL */
+.s5-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+/* sm: 640px */
+@media (min-width: 640px) {
+  .s5-modal {
+    padding: 24px;
+  }
+}
+
+/* md: 768px */
+@media (min-width: 768px) {
+  .s5-modal {
+    padding: 24px;
+  }
+}
+
+.s5-modal:not([hidden]) {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.s5-modal[hidden] {
+  display: none;
+}
+
+.s5-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 11, 9, 0.6);
+  backdrop-filter: blur(12px);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.s5-modal-content {
+  position: relative;
+  background: #FAF6F1;
+  border: 1px solid #E5DED8;
+  border-radius: 16px;
+  padding: 32px 24px;
+  max-width: 100%;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(58, 18, 15, 0.25);
+  animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* sm: 640px */
+@media (min-width: 640px) {
+  .s5-modal-content {
+    padding: 40px 32px;
+    max-width: 420px;
+    border-radius: 24px;
+  }
+}
+
+/* md: 768px */
+@media (min-width: 768px) {
+  .s5-modal-content {
+    padding: 48px 40px;
+    max-width: 480px;
+    border-radius: 28px;
+  }
+}
+
+/* lg: 1024px */
+@media (min-width: 1024px) {
+  .s5-modal-content {
+    padding: 56px 48px;
+    max-width: 500px;
+    border-radius: 28px;
+  }
+}
+
+.s5-modal-emoji {
+  font-size: 48px;
+  margin-bottom: 16px;
+  animation: bounce 1s ease-in-out 0.2s;
+}
+
+/* sm: 640px */
+@media (min-width: 640px) {
+  .s5-modal-emoji {
+    font-size: 56px;
+    margin-bottom: 20px;
+  }
+}
+
+/* md: 768px */
+@media (min-width: 768px) {
+  .s5-modal-emoji {
+    font-size: 64px;
+    margin-bottom: 24px;
+  }
+}
+
+/* lg: 1024px */
+@media (min-width: 1024px) {
+  .s5-modal-emoji {
+    font-size: 72px;
+    margin-bottom: 24px;
+  }
+}
+
+.s5-modal-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 400;
+  color: #4B2E2B;
+  margin: 0 0 12px 0;
+  line-height: 1.3;
+  padding: 0 8px;
+}
+
+/* sm: 640px */
+@media (min-width: 640px) {
+  .s5-modal-title {
+    font-size: 28px;
+    margin: 0 0 16px 0;
+  }
+}
+
+/* md: 768px */
+@media (min-width: 768px) {
+  .s5-modal-title {
+    font-size: 32px;
+    margin: 0 0 16px 0;
+    padding: 0 16px;
+  }
+}
+
+/* lg: 1024px */
+@media (min-width: 1024px) {
+  .s5-modal-title {
+    font-size: 36px;
+  }
+}
+
+.s5-modal-message {
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-weight: 300;
+  color: #8C7B70;
+  margin: 0 0 20px 0;
+  line-height: 1.6;
+  padding: 0 8px;
+}
+
+/* sm: 640px */
+@media (min-width: 640px) {
+  .s5-modal-message {
+    font-size: 14px;
+    margin: 0 0 24px 0;
+  }
+}
+
+/* md: 768px */
+@media (min-width: 768px) {
+  .s5-modal-message {
+    font-size: 15px;
+    margin: 0 0 28px 0;
+    padding: 0 16px;
+  }
+}
+
+/* lg: 1024px */
+@media (min-width: 1024px) {
+  .s5-modal-message {
+    font-size: 16px;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   SCENE 6 — FINAL CELEBRATION & FAREWELL PAGE
+   A full-screen image scroll with glassmorphic message overlay at bottom
+   ────────────────────────────────────────────────────────────────────────── */
+
+.scene-6-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  background-color: #000;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  z-index: -1;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
+}
+
+.scene-6-container.active {
+  z-index: 32;
+  pointer-events: auto;
+}
+
+.scene-6-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/* Background Image — scrolls upward dynamically */
+.scene-6-bg-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  z-index: 1;
+  will-change: transform;
+}
+
+/* Glassmorphic Bottom Container */
+.scene-6-glass-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  z-index: 2;
+  padding: 32px 16px;
+  box-sizing: border-box;
+  text-align: center;
+  will-change: opacity, transform;
+}
+
+/* sm: 640px */
+@media (min-width: 640px) {
+  .scene-6-glass-overlay {
+    padding: 40px 24px;
+  }
+}
+
+/* md: 768px */
+@media (min-width: 768px) {
+  .scene-6-glass-overlay {
+    padding: 48px 32px;
+  }
+}
+
+.scene-6-message-wrapper {
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* sm: 640px */
+@media (min-width: 640px) {
+  .scene-6-message-wrapper {
+    gap: 16px;
+  }
+}
+
+/* md: 768px */
+@media (min-width: 768px) {
+  .scene-6-message-wrapper {
+    gap: 20px;
+  }
+}
+
+.scene-6-wishes {
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.8);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* sm: 640px */
+@media (min-width: 640px) {
+  .scene-6-wishes {
+    font-size: 12px;
+  }
+}
+
+/* md: 768px */
+@media (min-width: 768px) {
+  .scene-6-wishes {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+  }
+}
+
+.scene-6-names {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 30px;
+  font-weight: 500;
+  color: #FFF;
+  margin: 0;
+  line-height: 1.3;
+}
+
+/* sm: 640px */
+@media (min-width: 640px) {
+  .scene-6-names {
+    font-size: 40px;
+  }
+}
+
+/* md: 768px */
+@media (min-width: 768px) {
+  .scene-6-names {
+    font-size: 50px;
+  }
+}
+
+/* lg: 1024px */
+@media (min-width: 1024px) {
+  .scene-6-names {
+    font-size: 60px;
+  }
+}
+
+/* xl: 1280px */
+@media (min-width: 1280px) {
+  .scene-6-names {
+    font-size: 72px;
+  }
+}
+
+.scene-6-closing {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 14px;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.75);
+  margin: 0;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+/* sm: 640px */
+@media (min-width: 640px) {
+  .scene-6-closing {
+    font-size: 16px;
+  }
+}
+
+/* md: 768px */
+@media (min-width: 768px) {
+  .scene-6-closing {
+    font-size: 18px;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .s5-layout {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 50px 30px;
+  }
+
+  .s5-rsvp-card {
+    padding: 32px 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .s5-layout {
+    gap: 32px;
+    padding: 40px 20px;
+  }
+
+  .s5-title {
+    font-size: clamp(36px, 10vw, 56px);
+  }
+
+  .s5-action-buttons {
+    flex-direction: column;
+  }
+
+  .s5-btn-primary,
+  .s5-btn-secondary {
+    width: 100%;
+  }
+
+  .s5-rsvp-card {
+    padding: 28px 20px;
+  }
+
+  .s5-rsvp-title {
+    font-size: 24px;
+  }
+}
