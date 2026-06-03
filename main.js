@@ -126,7 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // ─── PERFORMANCE: Frame preload tracking ───
   let lastPreloadedFrame = 0;
   let currentFrame = 1;
-  let lastRenderedFrame = 0;
 
   // ─── PERFORMANCE: Style cache tracking (prevent redundant DOM writes) ───
   let lastScene2Opacity = -1;
