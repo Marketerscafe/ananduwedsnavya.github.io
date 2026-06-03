@@ -123,6 +123,30 @@ document.addEventListener('DOMContentLoaded', () => {
     preloadFrame(i);
   }
 
+  // ─── PERFORMANCE: Frame preload tracking ───
+  let lastPreloadedFrame = 0;
+  let currentFrame = 1;
+  let lastRenderedFrame = 0;
+
+  // ─── PERFORMANCE: Style cache tracking (prevent redundant DOM writes) ───
+  let lastScene2Opacity = -1;
+  let lastScene2Scale = -1;
+  let lastScene2Display = '';
+  let lastScene2PointerEvents = '';
+  let lastScene3Opacity = -1;
+  let lastScene3PointerEvents = '';
+  let lastScene4Opacity = -1;
+  let lastScene4PointerEvents = '';
+  let lastScene4BackgroundColor = '';
+  let lastScene4ZIndex = '';
+  let lastScene5Display = '';
+  let lastScene5Opacity = -1;
+  let lastScene5PointerEvents = '';
+  let lastScene6Display = '';
+  let lastScene6Opacity = -1;
+  let lastScene6PointerEvents = '';
+  let lastScene6GlassOpacity = -1;
+
   // ─── BUTTERFLY IMAGE SEQUENCE (REMOVED - butterfly model only) ───
 
   // Canvas particle engine removed in favor of high-fashion crisp vector plain text reveal.
@@ -250,6 +274,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     applyTransition(smoothProgress);
+
+    // PERF: Frame preloading with guard - only when frame actually changes
+    if (currentFrame !== lastPreloadedFrame) {
+      handlePreloading(currentFrame);
+      lastPreloadedFrame = currentFrame;
+    }
     
     rafId = requestAnimationFrame(cinematicLoop);
   }
@@ -275,23 +305,44 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Apply Scene 2 styling
-    scene2.style.opacity = s2Opacity;
-    scene2.style.transform = 'scale(' + s2Scale + ')';
-    scene2.style.display = s2Opacity > 0 ? 'flex' : 'none';
+    // PERF: Only update DOM if values changed
+    if (s2Opacity !== lastScene2Opacity) {
+      scene2.style.opacity = s2Opacity;
+      lastScene2Opacity = s2Opacity;
+    }
+    if (s2Scale !== lastScene2Scale) {
+      scene2.style.transform = 'scale(' + s2Scale + ')';
+      lastScene2Scale = s2Scale;
+    }
+    const s2Display = s2Opacity > 0 ? 'flex' : 'none';
+    if (s2Display !== lastScene2Display) {
+      scene2.style.display = s2Display;
+      lastScene2Display = s2Display;
+    }
     if (s2Opacity > 0) {
-      scene2.style.pointerEvents = 'auto';
+      const s2PE = 'auto';
+      if (s2PE !== lastScene2PointerEvents) {
+        scene2.style.pointerEvents = s2PE;
+        lastScene2PointerEvents = s2PE;
+      }
       scene2.removeAttribute('aria-hidden');
     } else {
-      scene2.style.pointerEvents = 'none';
+      const s2PE = 'none';
+      if (s2PE !== lastScene2PointerEvents) {
+        scene2.style.pointerEvents = s2PE;
+        lastScene2PointerEvents = s2PE;
+      }
       scene2.setAttribute('aria-hidden', 'true');
     }
-    scene2.style.zIndex = '18';
+    if ('18' !== lastScene4ZIndex) {  // zIndex is always '18' for scene2
+      scene2.style.zIndex = '18';
+    }
 
     // ─── SCENE 3 ENTRY, CHAMPAGNE SEQUENCE ───
     let s3ContainerOpacity = 0;
     let s3ContentOpacity = 0;
     let s3Rise = 80;
-    let currentFrame = 1;
+    currentFrame = 1;  // Module-scoped for cinematicLoop preload tracking
 
     let s4Active = false;
     let s4Opacity = 0;
@@ -333,7 +384,11 @@ document.addEventListener('DOMContentLoaded', () => {
       currentFrame = 202;
     }
 
-    scene3.style.opacity = s3ContainerOpacity;
+    // PERF: Only update DOM if values changed
+    if (s3ContainerOpacity !== lastScene3Opacity) {
+      scene3.style.opacity = s3ContainerOpacity;
+      lastScene3Opacity = s3ContainerOpacity;
+    }
     // Apply Scene 3 rise/fall transform (upward parallax effect)
     if (s3Content) {
       s3Content.style.transform = 'translateY(' + s3Rise + 'px)';
@@ -341,10 +396,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Hide Scene 3 completely when Scene 4 takes over (p >= 0.42)
     if (p >= 0.42) {
-      scene3.style.pointerEvents = 'none';
+      const s3PE = 'none';
+      if (s3PE !== lastScene3PointerEvents) {
+        scene3.style.pointerEvents = s3PE;
+        lastScene3PointerEvents = s3PE;
+      }
       scene3.setAttribute('aria-hidden', 'true');
     } else {
-      scene3.style.pointerEvents = 'auto';
+      const s3PE = 'auto';
+      if (s3PE !== lastScene3PointerEvents) {
+        scene3.style.pointerEvents = s3PE;
+        lastScene3PointerEvents = s3PE;
+      }
       scene3.removeAttribute('aria-hidden');
     }
 
@@ -382,14 +445,29 @@ document.addEventListener('DOMContentLoaded', () => {
       if (s4Active) {
         scene4.classList.add('active');
         scene4.removeAttribute('aria-hidden');
-        scene4.style.zIndex = '28';
-        scene4.style.pointerEvents = s4Opacity > 0.3 ? 'auto' : 'none';
+        if ('28' !== lastScene4ZIndex) {
+          scene4.style.zIndex = '28';
+          lastScene4ZIndex = '28';
+        }
+        const s4PE = s4Opacity > 0.3 ? 'auto' : 'none';
+        if (s4PE !== lastScene4PointerEvents) {
+          scene4.style.pointerEvents = s4PE;
+          lastScene4PointerEvents = s4PE;
+        }
       } else {
         scene4.classList.remove('active');
         scene4.setAttribute('aria-hidden', 'true');
-        scene4.style.pointerEvents = 'none';
+        const s4PE = 'none';
+        if (s4PE !== lastScene4PointerEvents) {
+          scene4.style.pointerEvents = s4PE;
+          lastScene4PointerEvents = s4PE;
+        }
       }
-      scene4.style.opacity = s4Opacity.toString();
+      const s4OpStr = s4Opacity.toString();
+      if (s4OpStr !== lastScene4Opacity) {
+        scene4.style.opacity = s4OpStr;
+        lastScene4Opacity = s4OpStr;
+      }
     }
 
     // ─── SCENE 4 TIMELINE CARD SCROLL SYNCHRONIZATION ───
@@ -541,7 +619,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       if (scene4) {
-        scene4.style.backgroundColor = '#DCCAC2';
+        const s4BgColor = '#DCCAC2';
+        if (s4BgColor !== lastScene4BackgroundColor) {
+          scene4.style.backgroundColor = s4BgColor;
+          lastScene4BackgroundColor = s4BgColor;
+        }
       }
     }
 
@@ -550,17 +632,41 @@ document.addEventListener('DOMContentLoaded', () => {
       if (s5Active) {
         scene5.classList.add('active');
         scene5.removeAttribute('aria-hidden');
-        scene5.style.display = 'flex';
-        scene5.style.opacity = s5Opacity.toString();
-        scene5.style.pointerEvents = s5Opacity > 0.3 ? 'auto' : 'none';
+        const s5Display = 'flex';
+        if (s5Display !== lastScene5Display) {
+          scene5.style.display = s5Display;
+          lastScene5Display = s5Display;
+        }
+        const s5OpStr = s5Opacity.toString();
+        if (s5OpStr !== lastScene5Opacity) {
+          scene5.style.opacity = s5OpStr;
+          lastScene5Opacity = s5OpStr;
+        }
+        const s5PE = s5Opacity > 0.3 ? 'auto' : 'none';
+        if (s5PE !== lastScene5PointerEvents) {
+          scene5.style.pointerEvents = s5PE;
+          lastScene5PointerEvents = s5PE;
+        }
         scene5.style.zIndex = '35';
         scene5.style.transition = 'none';
       } else {
         scene5.classList.remove('active');
         scene5.setAttribute('aria-hidden', 'true');
-        scene5.style.display = 'none';
-        scene5.style.opacity = '0';
-        scene5.style.pointerEvents = 'none';
+        const s5Display = 'none';
+        if (s5Display !== lastScene5Display) {
+          scene5.style.display = s5Display;
+          lastScene5Display = s5Display;
+        }
+        const s5OpStr = '0';
+        if (s5OpStr !== lastScene5Opacity) {
+          scene5.style.opacity = s5OpStr;
+          lastScene5Opacity = s5OpStr;
+        }
+        const s5PE = 'none';
+        if (s5PE !== lastScene5PointerEvents) {
+          scene5.style.pointerEvents = s5PE;
+          lastScene5PointerEvents = s5PE;
+        }
       }
     }
 
@@ -568,22 +674,54 @@ document.addEventListener('DOMContentLoaded', () => {
       if (s6Active) {
         scene6.classList.add('active');
         scene6.removeAttribute('aria-hidden');
-        scene6.style.display = 'flex';
-        scene6.style.opacity = s6Opacity.toString();
-        scene6.style.pointerEvents = s6Opacity > 0.3 ? 'auto' : 'none';
+        const s6Display = 'flex';
+        if (s6Display !== lastScene6Display) {
+          scene6.style.display = s6Display;
+          lastScene6Display = s6Display;
+        }
+        const s6OpStr = s6Opacity.toString();
+        if (s6OpStr !== lastScene6Opacity) {
+          scene6.style.opacity = s6OpStr;
+          lastScene6Opacity = s6OpStr;
+        }
+        const s6PE = s6Opacity > 0.3 ? 'auto' : 'none';
+        if (s6PE !== lastScene6PointerEvents) {
+          scene6.style.pointerEvents = s6PE;
+          lastScene6PointerEvents = s6PE;
+        }
         scene6.style.zIndex = '40';
         scene6.style.transition = 'none';
         if (s6GlassOverlay) {
-          s6GlassOverlay.style.opacity = s6Opacity.toString();
+          const s6GlassOp = s6Opacity.toString();
+          if (s6GlassOp !== lastScene6GlassOpacity) {
+            s6GlassOverlay.style.opacity = s6GlassOp;
+            lastScene6GlassOpacity = s6GlassOp;
+          }
         }
       } else {
         scene6.classList.remove('active');
         scene6.setAttribute('aria-hidden', 'true');
-        scene6.style.display = 'none';
-        scene6.style.opacity = '0';
-        scene6.style.pointerEvents = 'none';
+        const s6Display = 'none';
+        if (s6Display !== lastScene6Display) {
+          scene6.style.display = s6Display;
+          lastScene6Display = s6Display;
+        }
+        const s6OpStr = '0';
+        if (s6OpStr !== lastScene6Opacity) {
+          scene6.style.opacity = s6OpStr;
+          lastScene6Opacity = s6OpStr;
+        }
+        const s6PE = 'none';
+        if (s6PE !== lastScene6PointerEvents) {
+          scene6.style.pointerEvents = s6PE;
+          lastScene6PointerEvents = s6PE;
+        }
         if (s6GlassOverlay) {
-          s6GlassOverlay.style.opacity = '0';
+          const s6GlassOp = '0';
+          if (s6GlassOp !== lastScene6GlassOpacity) {
+            s6GlassOverlay.style.opacity = s6GlassOp;
+            lastScene6GlassOpacity = s6GlassOp;
+          }
         }
       }
     }
@@ -604,8 +742,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       scene3.style.backgroundColor = activeBgColor;
 
-      // Handle predictive caching in background threads
-      handlePreloading(currentFrame);
+      // PERF: Preloading moved to cinematicLoop to avoid nesting inside render function
     }
 
     
