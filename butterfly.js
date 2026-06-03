@@ -162,6 +162,42 @@ document.addEventListener('DOMContentLoaded', () => {
   // Reference to Scene 4 container for state sync
   const scene4El = document.getElementById('scene-4-container');
 
+  // Track render errors for auto-recovery
+  let renderErrorCount = 0;
+  const MAX_RENDER_ERRORS = 3;
+
+  // Error recovery function
+  function resetButterflyScene() {
+    console.error('Butterfly render failed, attempting recovery...');
+    renderErrorCount += 1;
+    
+    if (renderErrorCount >= MAX_RENDER_ERRORS) {
+      console.error('Butterfly recovery failed after ' + MAX_RENDER_ERRORS + ' attempts. Disabling butterfly rendering.');
+      return false;
+    }
+
+    try {
+      // Clear the scene
+      if (butterfly && scene) {
+        scene.remove(butterfly);
+      }
+      
+      // Reset WebGL context if possible
+      if (renderer && renderer.getContext) {
+        const gl = renderer.getContext();
+        if (gl && gl.getExtension('WEBGL_lose_context')) {
+          gl.getExtension('WEBGL_lose_context').loseContext();
+        }
+      }
+
+      console.log('Butterfly scene reset attempt ' + renderErrorCount);
+      return true;
+    } catch (err) {
+      console.error('Butterfly reset failed:', err);
+      return false;
+    }
+  }
+
   // 8. Physics Steering Update & Render Loop
   function animate() {
     requestAnimationFrame(animate);
@@ -301,7 +337,16 @@ document.addEventListener('DOMContentLoaded', () => {
       pathTime += pathSpeed * dt * activeSpeedMultiplier;
     }
 
-    renderer.render(scene, camera);
+    try {
+      renderer.render(scene, camera);
+      renderErrorCount = 0; // Reset error count on successful render
+    } catch (err) {
+      console.error('Butterfly render error:', err);
+      if (!resetButterflyScene()) {
+        // If recovery failed, stop rendering
+        return;
+      }
+    }
   }
 
   // 9. Handle window resizing smoothly

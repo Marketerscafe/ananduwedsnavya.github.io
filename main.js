@@ -118,8 +118,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Eagerly cache the first 30 frames immediately on initialization to support longer sequence
-  for (let i = 1; i <= 30; i++) {
+  // Eagerly cache the first 50 frames immediately on initialization to support longer sequence
+  for (let i = 1; i <= 50; i++) {
     preloadFrame(i);
   }
 
@@ -221,8 +221,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (scrollEnabled) return;
     scrollEnabled = true;
 
-    // 8.0 viewport heights of scroll room — extended for Scene 6 finale with more scroll time
-    document.body.style.height = (window.innerHeight * 8.0) + 'px';
+    // 10.0 viewport heights of scroll room — extended for comfortable Scene 5 reading + Scene 6 finale
+    document.body.style.height = (window.innerHeight * 10.0) + 'px';
     document.documentElement.style.overflowY = 'auto';
     document.body.style.overflowY = 'auto';
     document.documentElement.style.overflowX = 'hidden';
@@ -363,23 +363,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (p >= 0.42 && p < 0.70) {
       s4Active = true;
       s4Opacity = 1.0;
-    } else if (p >= 0.70 && p < 0.85) {
+    } else if (p >= 0.70 && p < 1.00) {
       s4Active = false;
       s4Opacity = 0.0;
       s5Active = true;
-      s5Opacity = (p - 0.70) / 0.15;
-    } else if (p >= 0.85 && p < 1.00) {
-      s4Active = false;
-      s4Opacity = 0.0;
-      s5Active = true;
-      s5Opacity = 1.0 - (p - 0.85) / 0.15;
-      s6Active = true;
-      s6Opacity = (p - 0.85) / 0.15;
+      s5Opacity = (p - 0.70) / 0.30;
     } else if (p >= 1.00) {
       s4Active = false;
       s4Opacity = 0.0;
+      s5Active = true;
+      s5Opacity = 1.0;
       s6Active = true;
-      s6Opacity = 1.0;
+      s6Opacity = Math.min((p - 1.00) * 2, 1.0);
     }
 
     // Update Scene 4 state dynamically
