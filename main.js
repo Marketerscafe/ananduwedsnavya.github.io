@@ -148,6 +148,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (interactionTriggered) return;
     interactionTriggered = true;
 
+    // ─── AUDIO: Start background music on user interaction ───
+    // This must be called directly within the user gesture for iOS compliance
+    if (typeof AudioManager !== 'undefined') {
+      AudioManager.init();
+      AudioManager.resume();
+      AudioManager.playBackgroundMusic();
+    }
+
     // Instantly disable interaction pointer events to prevent double taps
     wrapper.style.pointerEvents = 'none';
 
