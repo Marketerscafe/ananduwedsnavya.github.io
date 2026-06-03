@@ -211,8 +211,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const p4 = parseFloat(archWrapper.getAttribute('data-scroll-p4')) || 0;
 
       // Compute zoom scale and fade out multiplier in perfect lockstep with s4 elements
-      const bfScale = 1.0 + Math.pow(p4, 2.2) * 3.0; // Scale zooms up from 1.0 to 4.0
-      const bfOpacityMult = p4 < 0.25 ? 1.0 : Math.max(0, 1.0 - (p4 - 0.25) / 0.40); // Fades completely by p4 = 0.65
+      const bfScale = Math.max(0.4, 1.0 - Math.pow(p4, 1.5) * 0.6); // Scale shrinks from 1.0 to 0.4 as you scroll
+      const bfOpacityMult = p4 < 0.85 ? 1.0 : Math.max(0, 1.0 - (p4 - 0.85) / 0.15); // Stays visible during boxes, fades at end
 
       canvas.style.transform = 'translate(-50%, -50%) scale(' + bfScale + ')';
 

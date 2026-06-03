@@ -653,6 +653,35 @@ html, body {
   z-index: 28; /* Placed cleanly above Scene 3 and supporting overlays when settled */
 }
 
+/* All boxes lit state — darken background, illuminate all cards */
+.scene-4-container.all-boxes-lit {
+  background-color: #0a0805;
+  background-image: 
+    radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.85) 70%);
+}
+
+.scene-4-container.all-boxes-lit #s4-card-1,
+.scene-4-container.all-boxes-lit #s4-card-2,
+.scene-4-container.all-boxes-lit #s4-card-3 {
+  opacity: 1;
+}
+
+.scene-4-container.all-boxes-lit .s4-card-content {
+  background: rgba(255, 255, 255, 0.65);
+  border-color: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 40px 80px rgba(200, 150, 100, 0.25), 0 0 40px rgba(255, 255, 255, 0.15);
+}
+
+.scene-4-container.all-boxes-lit .s4-card-content::before {
+  opacity: 1;
+  background: radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.2) 50%, transparent 70%);
+}
+
+/* Butterfly visibility enhancement in dark mode */
+.scene-4-container.all-boxes-lit #butterfly-canvas {
+  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.1));
+}
+
 .scene-4-content {
   position: relative;
   width: 100%;
@@ -1493,7 +1522,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: -1;
+  z-index: 35;
   opacity: 0;
   pointer-events: none;
   will-change: opacity;
@@ -1510,24 +1539,30 @@ html, body {
 .s5-layout {
   display: flex;
   flex-direction: column;
-  gap: 36px;
+  gap: 24px;
   max-width: 100%;
   width: 100%;
-  padding: 64px 16px;
+  padding: 40px 12px;
   margin: 0 auto;
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* sm: 640px */
 @media (min-width: 640px) {
   .s5-layout {
-    padding: 64px 24px;
+    gap: 32px;
+    padding: 48px 16px;
+    max-height: 100vh;
   }
 }
 
 /* md: 768px */
 @media (min-width: 768px) {
   .s5-layout {
-    padding: 80px 32px;
+    gap: 40px;
+    padding: 64px 32px;
   }
 }
 
@@ -2274,20 +2309,20 @@ html, body {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 100vh;
   height: 100dvh;
   background-color: #000;
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  z-index: -1;
+  z-index: 41;
   opacity: 0;
   pointer-events: none;
   will-change: opacity;
 }
 
 .scene-6-container.active {
-  z-index: 32;
+  z-index: 41;
   pointer-events: auto;
 }
 
@@ -2313,6 +2348,13 @@ html, body {
   object-position: center top;
   z-index: 1;
   will-change: transform;
+}
+
+/* Desktop optimized image positioning */
+@media (min-width: 1024px) {
+  .scene-6-bg-image {
+    object-position: center center;
+  }
 }
 
 /* Glassmorphic Bottom Container */
@@ -2344,6 +2386,20 @@ html, body {
 @media (min-width: 768px) {
   .scene-6-glass-overlay {
     padding: 48px 32px;
+  }
+}
+
+/* lg: 1024px — expanded padding for desktop */
+@media (min-width: 1024px) {
+  .scene-6-glass-overlay {
+    padding: 64px 48px 80px 48px;
+  }
+}
+
+/* xl: 1280px — spacious desktop layout */
+@media (min-width: 1280px) {
+  .scene-6-glass-overlay {
+    padding: 72px 60px 96px 60px;
   }
 }
 
@@ -2397,7 +2453,7 @@ html, body {
 
 .scene-6-names {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 30px;
+  font-size: 25px;
   font-weight: 500;
   color: #FFF;
   margin: 0;
@@ -2407,28 +2463,28 @@ html, body {
 /* sm: 640px */
 @media (min-width: 640px) {
   .scene-6-names {
-    font-size: 40px;
+    font-size: 35px;
   }
 }
 
 /* md: 768px */
 @media (min-width: 768px) {
   .scene-6-names {
-    font-size: 50px;
+    font-size: 45px;
   }
 }
 
 /* lg: 1024px */
 @media (min-width: 1024px) {
   .scene-6-names {
-    font-size: 60px;
+    font-size: 55px;
   }
 }
 
 /* xl: 1280px */
 @media (min-width: 1280px) {
   .scene-6-names {
-    font-size: 72px;
+    font-size: 67px;
   }
 }
 
@@ -2456,6 +2512,14 @@ html, body {
   }
 }
 
+/* Scroll Spacer — Extends document height to allow Scene 6 to be scrolled into view */
+.scroll-spacer {
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  background-color: transparent;
+}
+
 /* Animations */
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -2476,6 +2540,79 @@ html, body {
 @keyframes bounce {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   BUTTERFLY INTERACTION BUTTON — Glassmorphic Bottom Screen Button
+   ────────────────────────────────────────────────────────────────────────── */
+
+.butterfly-interact-btn {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  
+  /* Glassmorphic styling */
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 50px;
+  
+  /* Typography (same as s4-card-event-title) */
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1.15rem, 1.8vw, 1.25rem);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 0.05em;
+  text-transform: capitalize;
+  
+  /* Padding and dimensions */
+  padding: 12px 32px;
+  height: auto;
+  white-space: nowrap;
+  cursor: pointer;
+  
+  /* Transitions */
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  
+  /* Remove default button styles */
+  border-style: solid;
+  outline: none;
+  
+  /* Hidden by default */
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+/* Visible only during Scene 4 */
+.butterfly-interact-btn.visible {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.butterfly-interact-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+  transform: translateX(-50%) translateY(-2px);
+}
+
+.butterfly-interact-btn:active {
+  transform: translateX(-50%) translateY(0);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* Mobile responsive */
+@media (max-width: 640px) {
+  .butterfly-interact-btn {
+    bottom: 24px;
+    font-size: 1rem;
+    padding: 10px 24px;
+  }
 }
 
 /* RESPONSIVE */

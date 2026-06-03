@@ -75,6 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const s4MainHeading = document.getElementById('s4-main-heading');
   const s4HeadingWrapper = document.getElementById('s4-heading-wrapper');
   const s4ButterfliesLayer = document.getElementById('s4-butterflies-layer');
+  const butterflyInteractBtn = document.getElementById('butterfly-interact-btn');
 
   const venueLocationBtn = document.getElementById('venue-location-btn') || document.getElementById('s5-directions-btn');
   if (venueLocationBtn) {
@@ -91,15 +92,101 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ─── BUTTERFLY INTERACTION BUTTON ───
+  let isBoxesLitMode = false;
+
+  function preventScroll(e) {
+    e.preventDefault();
+  }
+
+  function preventZoom(e) {
+    if (e.touches && e.touches.length > 1) {
+      e.preventDefault();
+    }
+  }
+
+  function lockScrollAndZoom() {
+    document.body.style.overflow = 'hidden';
+    document.addEventListener('wheel', preventScroll, { passive: false });
+    document.addEventListener('touchmove', preventScroll, { passive: false });
+    document.addEventListener('touchstart', preventZoom, { passive: false });
+    document.documentElement.style.touchAction = 'none';
+  }
+
+  function unlockScrollAndZoom() {
+    document.body.style.overflow = 'auto';
+    document.removeEventListener('wheel', preventScroll);
+    document.removeEventListener('touchmove', preventScroll);
+    document.removeEventListener('touchstart', preventZoom);
+    document.documentElement.style.touchAction = 'auto';
+  }
+
+  if (butterflyInteractBtn) {
+    butterflyInteractBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      isBoxesLitMode = !isBoxesLitMode;
+
+      // Toggle all-boxes-lit state on Scene 4
+      if (scene4) {
+        scene4.classList.toggle('all-boxes-lit');
+        // Ensure all cards are visible and active
+        if (scene4.classList.contains('all-boxes-lit')) {
+          if (s4Card1) s4Card1.classList.add('active');
+          if (s4Card2) s4Card2.classList.add('active');
+          if (s4Card3) s4Card3.classList.add('active');
+          // Lock scroll and zoom when entering boxes-lit mode
+          lockScrollAndZoom();
+        } else {
+          // Unlock scroll and zoom when exiting boxes-lit mode
+          unlockScrollAndZoom();
+        }
+      }
+    });
+  }
+
   // ─── CHAMPAGNE IMAGE SEQUENCE PRELOADER & CACHE ───
+  // Advanced caching system with memory limits, LRU eviction, and directional preloading
   const preloadedImages = {};
+  const MAX_CACHE_FRAMES = 50;  // Keep ~50MB of frames in memory (assuming ~1MB per frame)
+  let lastAccessOrder = {};     // Track frame access time for LRU eviction
+  let accessCounter = 0;        // Monotonic counter for LRU tracking
+  let batchPreloadScheduled = false;
+  let lastScrollDirection = 1;  // 1 = down, -1 = up
+  let previousFrame = 1;
+  
+  function evictLRUFrames() {
+    if (Object.keys(preloadedImages).length > MAX_CACHE_FRAMES) {
+      // Find and remove least recently used frame
+      let lruFrame = null;
+      let lruTime = Infinity;
+      
+      for (let frameNum in lastAccessOrder) {
+        if (lastAccessOrder[frameNum] < lruTime) {
+          lruTime = lastAccessOrder[frameNum];
+          lruFrame = frameNum;
+        }
+      }
+      
+      if (lruFrame !== null) {
+        delete preloadedImages[lruFrame];
+        delete lastAccessOrder[lruFrame];
+      }
+    }
+  }
+
   function preloadFrame(frameNumber) {
     if (frameNumber < 1 || frameNumber > 202) return;
     if (!preloadedImages[frameNumber]) {
+      evictLRUFrames();
       const numStr = String(frameNumber).padStart(3, '0');
       const img = new Image();
-      img.src = 'assets/images/champagne/frame_' + numStr + '.jpg';
-      // Asynchronous background decoding: decompress JPEG on parallel worker threads
+      // PERF: Use WebP format (30-60% smaller) with fallback to JPEG
+      img.src = 'assets/images/champagne/frame_' + numStr + '.webp';
+      img.onerror = () => {
+        // Fallback to JPEG if WebP not available
+        img.src = 'assets/images/champagne/frame_' + numStr + '.jpg';
+      };
+      // Asynchronous background decoding: decompress on parallel worker threads
       if (img.decode) {
         img.decode().catch(() => {
           // Silently catch aborts on fast scroll direction changes
@@ -107,21 +194,99 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       preloadedImages[frameNumber] = img;
     }
+    // Update access time for LRU tracking
+    lastAccessOrder[frameNumber] = ++accessCounter;
   }
 
   function handlePreloading(currentFrame) {
+    // Detect scroll direction for predictive preloading priority
+    if (currentFrame > previousFrame) {
+      lastScrollDirection = 1;  // Scrolling down
+    } else if (currentFrame < previousFrame) {
+      lastScrollDirection = -1; // Scrolling up
+    }
+    previousFrame = currentFrame;
+
+    // Tier 1: Current frame (critical)
     preloadFrame(currentFrame);
-    // Predictive caching: +3 frames ahead and -3 frames behind
-    for (let offset = 1; offset <= 3; offset++) {
-      preloadFrame(currentFrame + offset);
-      preloadFrame(currentFrame - offset);
+    
+    // Tier 2: Next 10 frames in scroll direction (high priority)
+    for (let i = 1; i <= 10; i++) {
+      preloadFrame(currentFrame + (i * lastScrollDirection));
+    }
+    
+    // Tier 3: Previous 5 frames for backward scroll (medium priority)
+    for (let i = 1; i <= 5; i++) {
+      preloadFrame(currentFrame - (i * lastScrollDirection));
+    }
+
+    // Tier 4: Schedule batch preload of remaining frames in background
+    if (!batchPreloadScheduled) {
+      batchPreloadScheduled = true;
+      if (typeof requestIdleCallback !== 'undefined') {
+        requestIdleCallback(() => {
+          batchPreloadInBackground(currentFrame);
+          batchPreloadScheduled = false;
+        }, { timeout: 2000 });
+      }
     }
   }
 
-  // Eagerly cache the first 50 frames immediately on initialization to support longer sequence
-  for (let i = 1; i <= 50; i++) {
-    preloadFrame(i);
+  function batchPreloadInBackground(currentFrame) {
+    // Batch load frames in chunks to avoid blocking the render loop
+    // Prioritize frames closer to current position
+    const preloadQueue = [];
+    
+    // Add all frames in priority order (current is already loaded)
+    for (let f = 1; f <= 202; f++) {
+      if (!preloadedImages[f]) {
+        const distance = Math.abs(f - currentFrame);
+        preloadQueue.push({ frame: f, priority: distance });
+      }
+    }
+    
+    // Sort by distance (closer frames first)
+    preloadQueue.sort((a, b) => a.priority - b.priority);
+    
+    // Load frames in batches with setTimeout to avoid blocking
+    let batchIndex = 0;
+    const BATCH_SIZE = 8;
+    
+    function loadBatch() {
+      const endIndex = Math.min(batchIndex + BATCH_SIZE, preloadQueue.length);
+      for (let i = batchIndex; i < endIndex; i++) {
+        preloadFrame(preloadQueue[i].frame);
+      }
+      batchIndex = endIndex;
+      
+      if (batchIndex < preloadQueue.length) {
+        setTimeout(loadBatch, 50); // Throttle: 50ms between batches
+      }
+    }
+    
+    loadBatch();
   }
+
+  // PERF: Defer initial batch preload until after Scene 1 completes (avoid startup lag)
+  // Aggressive pre-warming: start with frames 1-80, then defer 51-202 to idle time
+  setTimeout(() => {
+    if (typeof requestIdleCallback !== 'undefined') {
+      requestIdleCallback(() => {
+        // Immediate warm: frames 1-80 (covers Scene 2 & early Scene 3)
+        for (let i = 1; i <= 80; i += 5) {
+          preloadFrame(i);
+        }
+        
+        // Deferred warm: frames 51-202 (rest of champagne sequence)
+        // Use another idle callback to avoid blocking user interaction
+        requestIdleCallback(() => {
+          for (let i = 51; i <= 202; i += 8) {
+            preloadFrame(i);
+          }
+        }, { timeout: 5000 });
+      }, { timeout: 3000 });
+    }
+  }, 2000);
 
   // ─── PERFORMANCE: Frame preload tracking ───
   let lastPreloadedFrame = 0;
@@ -141,9 +306,11 @@ document.addEventListener('DOMContentLoaded', () => {
   let lastScene5Display = '';
   let lastScene5Opacity = -1;
   let lastScene5PointerEvents = '';
+  let lastScene5ZIndex = '';
   let lastScene6Display = '';
   let lastScene6Opacity = -1;
   let lastScene6PointerEvents = '';
+  let lastScene6ZIndex = '';
   let lastScene6GlassOpacity = -1;
 
   // ─── BUTTERFLY IMAGE SEQUENCE (REMOVED - butterfly model only) ───
@@ -425,18 +592,34 @@ document.addEventListener('DOMContentLoaded', () => {
     if (p >= 0.42 && p < 0.70) {
       s4Active = true;
       s4Opacity = 1.0;
-    } else if (p >= 0.70 && p < 1.00) {
+    } else if (p >= 0.70 && p < 0.80) {
       s4Active = false;
       s4Opacity = 0.0;
       s5Active = true;
-      s5Opacity = (p - 0.70) / 0.30;
+      s5Opacity = (p - 0.70) / 0.10;
+    } else if (p >= 0.80 && p < 0.90) {
+      s4Active = false;
+      s4Opacity = 0.0;
+      s5Active = true;
+      // Scene 5 extended full view with scroll responsiveness
+      s5Opacity = 1.0;
+      s6Active = false;
+      s6Opacity = 0.0;
+    } else if (p >= 0.90 && p < 1.00) {
+      s4Active = false;
+      s4Opacity = 0.0;
+      s5Active = true;
+      // Scene 5 FADES OUT while Scene 6 fades IN (smooth crossfade)
+      s5Opacity = Math.max(0, 1.0 - ((p - 0.90) / 0.10));
+      s6Active = true;
+      s6Opacity = Math.min((p - 0.90) / 0.10, 1.0);
     } else if (p >= 1.00) {
       s4Active = false;
       s4Opacity = 0.0;
-      s5Active = true;
-      s5Opacity = 1.0;
+      s5Active = false;
+      s5Opacity = 0.0;
       s6Active = true;
-      s6Opacity = Math.min((p - 1.00) * 2, 1.0);
+      s6Opacity = 1.0;
     }
 
     // Update Scene 4 state dynamically
@@ -453,6 +636,10 @@ document.addEventListener('DOMContentLoaded', () => {
           scene4.style.pointerEvents = s4PE;
           lastScene4PointerEvents = s4PE;
         }
+        // Show butterfly button during Scene 4
+        if (butterflyInteractBtn) {
+          butterflyInteractBtn.classList.add('visible');
+        }
       } else {
         scene4.classList.remove('active');
         scene4.setAttribute('aria-hidden', 'true');
@@ -460,6 +647,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (s4PE !== lastScene4PointerEvents) {
           scene4.style.pointerEvents = s4PE;
           lastScene4PointerEvents = s4PE;
+        }
+        // Hide butterfly button when leaving Scene 4
+        if (butterflyInteractBtn) {
+          butterflyInteractBtn.classList.remove('visible');
         }
       }
       const s4OpStr = s4Opacity.toString();
@@ -630,7 +821,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (scene5) {
       if (s5Active) {
         scene5.classList.add('active');
-        scene5.removeAttribute('aria-hidden');
+        scene5.setAttribute('aria-hidden', 'true');
         const s5Display = 'flex';
         if (s5Display !== lastScene5Display) {
           scene5.style.display = s5Display;
@@ -641,12 +832,17 @@ document.addEventListener('DOMContentLoaded', () => {
           scene5.style.opacity = s5OpStr;
           lastScene5Opacity = s5OpStr;
         }
-        const s5PE = s5Opacity > 0.3 ? 'auto' : 'none';
+        const s5PE = s6Active || s5Opacity <= 0.3 ? 'none' : 'auto';
         if (s5PE !== lastScene5PointerEvents) {
           scene5.style.pointerEvents = s5PE;
           lastScene5PointerEvents = s5PE;
         }
-        scene5.style.zIndex = '35';
+        // Z-index range: 35-40 based on opacity
+        const s5ZIdx = (35 + Math.floor(s5Opacity * 5)).toString();
+        if (s5ZIdx !== lastScene5ZIndex) {
+          scene5.style.zIndex = s5ZIdx;
+          lastScene5ZIndex = s5ZIdx;
+        }
         scene5.style.transition = 'none';
       } else {
         scene5.classList.remove('active');
@@ -672,7 +868,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (scene6) {
       if (s6Active) {
         scene6.classList.add('active');
-        scene6.removeAttribute('aria-hidden');
+        scene6.setAttribute('aria-hidden', 'true');
         const s6Display = 'flex';
         if (s6Display !== lastScene6Display) {
           scene6.style.display = s6Display;
@@ -688,7 +884,12 @@ document.addEventListener('DOMContentLoaded', () => {
           scene6.style.pointerEvents = s6PE;
           lastScene6PointerEvents = s6PE;
         }
-        scene6.style.zIndex = '40';
+        // Z-index range: 40-45 based on opacity
+        const s6ZIdx = (40 + Math.floor(s6Opacity * 5)).toString();
+        if (s6ZIdx !== lastScene6ZIndex) {
+          scene6.style.zIndex = s6ZIdx;
+          lastScene6ZIndex = s6ZIdx;
+        }
         scene6.style.transition = 'none';
         if (s6GlassOverlay) {
           const s6GlassOp = s6Opacity.toString();
@@ -728,8 +929,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Apply the active frame image sequence update ONLY if the frame number actually shifted
     if (s3ChampagneImg && currentFrame !== lastRenderedFrame) {
       lastRenderedFrame = currentFrame;
+      
+      // PERF: Use WebP format (30-60% smaller) with automatic JPEG fallback
       const numStr = String(currentFrame).padStart(3, '0');
-      s3ChampagneImg.src = 'assets/images/champagne/frame_' + numStr + '.jpg';
+      s3ChampagneImg.src = 'assets/images/champagne/frame_' + numStr + '.webp';
+      // Fallback to JPEG if WebP unavailable (rare in modern browsers)
+      s3ChampagneImg.onerror = () => {
+        s3ChampagneImg.src = 'assets/images/champagne/frame_' + numStr + '.jpg';
+      };
 
       // Dynamically align the container background color to the active image frame's own background!
       // This completely dissolves the rectangular image border across the entire scroll progression.
@@ -971,12 +1178,12 @@ document.addEventListener('DOMContentLoaded', () => {
         'BEGIN:VALARM',
         'TRIGGER:-PT1D',
         'ACTION:DISPLAY',
-        'DESCRIPTION:Reminder: Athul & Melvin\'s Wedding is tomorrow!',
+        'DESCRIPTION:Anandu & Navya\'s forever!!!\\n' + venueAddress.replace(/,/g, '\\,'),
         'END:VALARM',
         'BEGIN:VALARM',
         'TRIGGER:-PT2H',
         'ACTION:DISPLAY',
-        'DESCRIPTION:Athul & Melvin\'s Wedding starts in 2 hours!',
+        'DESCRIPTION:Anandu & Navya\'s forever!!!\\n' + venueAddress.replace(/,/g, '\\,'),
         'END:VALARM',
         'END:VEVENT',
         'END:VCALENDAR'

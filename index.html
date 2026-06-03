@@ -142,10 +142,12 @@
       <div class="scene3-champagne-sequence" id="scene3-champagne-sequence">
         <img
           id="scene3-champagne-img"
-          src="assets/images/champagne/frame_001.jpg"
+          src="assets/images/champagne/frame_001.webp"
           alt="Champagne celebration"
           class="champagne-sequence-img"
           loading="eager"
+          width="1080"
+          height="1440"
         />
       </div>
 
@@ -249,6 +251,8 @@
             src="assets/images/arch.png?v=94.0"
             alt="Wedding floral arch gateway"
             class="s4-arch-img"
+            width="600"
+            height="800"
           />
         </div>
       </div>
@@ -371,6 +375,8 @@
           alt="Celebration farewell image"
           class="scene-6-bg-image"
           id="scene-6-bg-image"
+          width="1920"
+          height="1080"
         />
 
         <!-- Glassmorphic Overlay Container -->
@@ -383,6 +389,9 @@
         </div>
       </div>
     </section>
+
+    <!-- Scroll Spacer — Ensures Scene 6 is scrollable and viewable -->
+    <div class="scroll-spacer" id="scroll-spacer"></div>
 
     <!-- Global Volumetric Cinematic Fog Overlay (Foreground atmospheric veil) -->
     <div
@@ -397,6 +406,11 @@
       id="cinematic-transition-fog"
       aria-hidden="true"
     ></div>
+
+    <!-- Butterfly Interaction Button -->
+    <button id="butterfly-interact-btn" class="butterfly-interact-btn" aria-label="Interact with butterfly">
+      Interact with Butterfly
+    </button>
 
     <!-- Three.js 3D Library & GLTF Loader -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
