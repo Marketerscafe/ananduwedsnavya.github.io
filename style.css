@@ -1126,6 +1126,19 @@ html, body {
   text-shadow: 0 4px 12px rgba(42, 14, 11, 0.04);
 }
 
+.keep-scrolling-text {
+  font-family: 'Outfit', sans-serif;
+  text-transform: lowercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: #8A6F63;
+  font-weight: 300;
+  text-align: center;
+  opacity: 0.27;
+  margin-top: 1.2vh;
+  margin-bottom: 0;
+}
+
 .scroll-divider {
   display: flex;
   flex-direction: column;
@@ -1265,6 +1278,12 @@ html, body {
     
     /* Soft environmental cinematic grounding shadow override */
     text-shadow: 0 5px 15px rgba(42, 14, 11, 0.05);
+  }
+
+  .keep-scrolling-text {
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    margin-top: 1rem;
   }
 
   .scroll-divider {

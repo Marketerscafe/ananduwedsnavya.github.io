@@ -738,18 +738,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Softly triggers environmental light breathing and restrains focus on active interaction.
   // Scene 2 event listeners removed
 
-  // 7. Click Headline to Smooth Scroll and Settle Timeline Cards
-  if (s4HeadingWrapper) {
-    const handleHeadingClick = () => {
-      const maxScroll = document.body.scrollHeight - window.innerHeight;
-      window.scrollTo({
-        top: 0.70 * maxScroll,
-        behavior: 'smooth'
-      });
-    };
-    s4HeadingWrapper.addEventListener('click', handleHeadingClick);
-    s4HeadingWrapper.addEventListener('touchstart', handleHeadingClick, { passive: true });
-  }
 
   // ─── SCENE 3 LIVE COUNTDOWN SYSTEM ───
   // Target Date: 12 July 2026, 10:30 AM
