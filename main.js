@@ -171,6 +171,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (underwaterVideo) {
           if (scene4.classList.contains('all-boxes-lit')) {
             underwaterVideo.style.opacity = '1';
+            // Force preload the video on demand
+            underwaterVideo.preload = 'auto';
+            underwaterVideo.load(); // Trigger loading
+            
             // Ensure video element is ready and play with promise handling
             underwaterVideo.currentTime = 0; // Reset to start
             underwaterVideo.playbackRate = 1.0; // Ensure normal speed
@@ -209,6 +213,8 @@ document.addEventListener('DOMContentLoaded', () => {
             underwaterVideo.style.opacity = '0';
             underwaterVideo.pause();
             underwaterVideo.currentTime = 0; // Reset video when exiting mode
+            // Stop preloading when exiting mode to save bandwidth
+            underwaterVideo.preload = 'none';
           }
         }
         // Ensure all cards are visible and active
