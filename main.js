@@ -86,6 +86,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('cinematic-container');
   const wrapper = document.getElementById('video-wrapper');
   const video = document.getElementById('intro-video');
+  
+  // ─── VIDEO PLAYBACK HANDLER (User Gesture Bridge) ───
+  // Ensures intro video plays on user interaction while satisfying browser autoplay policies
+  const handleInitialPlay = () => {
+    if (video && video.paused) {
+      video.play().catch(err => {
+        console.warn("Video playback was blocked or failed:", err);
+      });
+    }
+  };
+
+  // Satisfy browser user-gesture requirements with global listeners
+  document.addEventListener('click', handleInitialPlay, { once: true });
+  document.addEventListener('touchstart', handleInitialPlay, { once: true });
+
   const scene2 = document.getElementById('scene-2-container');
   const scene3 = document.getElementById('scene-3-container');
   const fog = document.getElementById('cinematic-transition-fog');
