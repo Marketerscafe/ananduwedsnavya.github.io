@@ -1671,8 +1671,9 @@ html, body {
 .s5-left {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 24px;
+  padding-top: 40px;
 }
 
 /* sm: 640px */
