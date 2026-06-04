@@ -829,7 +829,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Apply Timeline layout wrapper opacity and fadeout after card glow ends
       if (s4TimelineLayout) {
-        s4TimelineLayout.style.opacity = (cardOpacityFactor * s4Opacity).toString();
+        // Keep timeline fully visible in butterfly interaction mode, otherwise use scroll progress
+        const timelineOpacity = isBoxesLitMode ? 1.0 : (cardOpacityFactor * s4Opacity);
+        s4TimelineLayout.style.opacity = timelineOpacity.toString();
       }
 
       // Progressive individual card reveals over cardsProgress
@@ -843,24 +845,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Card 1 (Wedding) — perfectly centered (no horizontal parting)
       if (s4Content1) {
-        s4Content1.style.opacity = (c1Progress * cardOpacityFactor).toString();
-        const scaleVal = (0.80 + c1Progress * 0.20) * cardScaleFactor;
-        const driftVal = (1.0 - c1Progress) * 35; // Elegant vertical glide up
-        s4Content1.style.transform = 'translate(0px, ' + driftVal + 'px) scale(' + scaleVal + ')';
+        // Keep cards fully visible and at final scale in butterfly interaction mode
+        if (isBoxesLitMode) {
+          s4Content1.style.opacity = '1';
+          const scaleVal = (0.80 + 1.0 * 0.20) * 1.0; // Final scale of 1.0
+          s4Content1.style.transform = 'translate(0px, 0px) scale(' + scaleVal + ')';
+        } else {
+          s4Content1.style.opacity = (c1Progress * cardOpacityFactor).toString();
+          const scaleVal = (0.80 + c1Progress * 0.20) * cardScaleFactor;
+          const driftVal = (1.0 - c1Progress) * 35; // Elegant vertical glide up
+          s4Content1.style.transform = 'translate(0px, ' + driftVal + 'px) scale(' + scaleVal + ')';
+        }
       }
       // Card 2 (Reception) — perfectly centered (no horizontal parting)
       if (s4Content2) {
-        s4Content2.style.opacity = (c2Progress * cardOpacityFactor).toString();
-        const scaleVal = (0.80 + c2Progress * 0.20) * cardScaleFactor;
-        const driftVal = (1.0 - c2Progress) * 35;
-        s4Content2.style.transform = 'translate(0px, ' + driftVal + 'px) scale(' + scaleVal + ')';
+        if (isBoxesLitMode) {
+          s4Content2.style.opacity = '1';
+          const scaleVal = (0.80 + 1.0 * 0.20) * 1.0;
+          s4Content2.style.transform = 'translate(0px, 0px) scale(' + scaleVal + ')';
+        } else {
+          s4Content2.style.opacity = (c2Progress * cardOpacityFactor).toString();
+          const scaleVal = (0.80 + c2Progress * 0.20) * cardScaleFactor;
+          const driftVal = (1.0 - c2Progress) * 35;
+          s4Content2.style.transform = 'translate(0px, ' + driftVal + 'px) scale(' + scaleVal + ')';
+        }
       }
       // Card 3 (Lunch) — perfectly centered (no horizontal parting)
       if (s4Content3) {
-        s4Content3.style.opacity = (c3Progress * cardOpacityFactor).toString();
-        const scaleVal = (0.80 + c3Progress * 0.20) * cardScaleFactor;
-        const driftVal = (1.0 - c3Progress) * 35;
-        s4Content3.style.transform = 'translate(0px, ' + driftVal + 'px) scale(' + scaleVal + ')';
+        if (isBoxesLitMode) {
+          s4Content3.style.opacity = '1';
+          const scaleVal = (0.80 + 1.0 * 0.20) * 1.0;
+          s4Content3.style.transform = 'translate(0px, 0px) scale(' + scaleVal + ')';
+        } else {
+          s4Content3.style.opacity = (c3Progress * cardOpacityFactor).toString();
+          const scaleVal = (0.80 + c3Progress * 0.20) * cardScaleFactor;
+          const driftVal = (1.0 - c3Progress) * 35;
+          s4Content3.style.transform = 'translate(0px, ' + driftVal + 'px) scale(' + scaleVal + ')';
+        }
       }
 
       // Sequential active focus glow toggling — delayed thresholds to ensure proper reading time
@@ -907,7 +928,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       if (s4TimelineLayout) {
         s4TimelineLayout.style.transform = '';
-        s4TimelineLayout.style.opacity = '0';
+        // Only hide timeline if NOT in butterfly interaction mode
+        if (!isBoxesLitMode) {
+          s4TimelineLayout.style.opacity = '0';
+        }
       }
 
       if (scene4) {
