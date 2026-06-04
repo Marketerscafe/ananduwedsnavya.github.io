@@ -171,9 +171,26 @@ document.addEventListener('DOMContentLoaded', () => {
         if (underwaterVideo) {
           if (scene4.classList.contains('all-boxes-lit')) {
             underwaterVideo.style.opacity = '1';
-            underwaterVideo.play();
+            // Ensure video element is ready and play with promise handling
+            underwaterVideo.currentTime = 0; // Reset to start
+            underwaterVideo.playbackRate = 1.0; // Ensure normal speed
+            const playPromise = underwaterVideo.play();
+            if (playPromise !== undefined) {
+              playPromise
+                .then(() => {
+                  console.log('Underwater video playing');
+                })
+                .catch((error) => {
+                  console.warn('Underwater video autoplay blocked:', error);
+                  // Attempt to play again with a small delay
+                  setTimeout(() => {
+                    underwaterVideo.play().catch(e => console.error('Video play failed:', e));
+                  }, 100);
+                });
+            }
           } else {
             underwaterVideo.style.opacity = '0';
+            underwaterVideo.pause();
           }
         }
         // Ensure all cards are visible and active
