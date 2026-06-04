@@ -216,8 +216,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Increase butterfly size and opacity when in all-boxes-lit mode (button clicked)
       if (scene4El.classList.contains('all-boxes-lit')) {
-        bfScale = Math.min(1.8, bfScale * 1.4); // Increase size by 40% (cap at 1.8)
-        bfOpacityMult = Math.min(1.0, bfOpacityMult * 1.3); // Increase opacity by 30% (cap at 1.0)
+        bfScale = Math.min(2.2, bfScale * 1.8); // Increase size by 80% (cap at 2.2)
+        bfOpacityMult = 1.0; // Keep full opacity like the boxes (no fade-out)
       }
 
       canvas.style.transform = 'translate(-50%, -50%) scale(' + bfScale + ')';
