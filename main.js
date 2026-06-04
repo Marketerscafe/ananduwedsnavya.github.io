@@ -1385,7 +1385,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'DTSTAMP:20260601T000000Z',
         'DTSTART;TZID=Asia/Kolkata:20260712T103000',
         'DTEND;TZID=Asia/Kolkata:20260712T150000',
-        'SUMMARY:Athul Krishnan & Melvin John — Wedding',
+        'SUMMARY:ANANDU&NAVYA\'s BIG DAY',
         'LOCATION:' + venueAddress.replace(/,/g, '\\,'),
         'DESCRIPTION:Cordially invited to celebrate the wedding of Athul Krishnan & Melvin John.\\n\\nCeremony: 10:30 AM – 12:30 PM\\nReception: 1:00 PM onwards\\nLunch: Following Reception',
         'STATUS:CONFIRMED',
