@@ -174,23 +174,41 @@ document.addEventListener('DOMContentLoaded', () => {
             // Ensure video element is ready and play with promise handling
             underwaterVideo.currentTime = 0; // Reset to start
             underwaterVideo.playbackRate = 1.0; // Ensure normal speed
-            const playPromise = underwaterVideo.play();
-            if (playPromise !== undefined) {
-              playPromise
-                .then(() => {
-                  console.log('Underwater video playing');
-                })
-                .catch((error) => {
-                  console.warn('Underwater video autoplay blocked:', error);
-                  // Attempt to play again with a small delay
-                  setTimeout(() => {
-                    underwaterVideo.play().catch(e => console.error('Video play failed:', e));
-                  }, 100);
-                });
+            underwaterVideo.muted = true; // Ensure muted for autoplay to work
+            
+            // Wait for video to be loadable before playing
+            if (underwaterVideo.readyState >= 2) {
+              // Video has metadata, try to play immediately
+              const playPromise = underwaterVideo.play();
+              if (playPromise !== undefined) {
+                playPromise
+                  .then(() => {
+                    console.log('Underwater video playing immediately');
+                  })
+                  .catch((error) => {
+                    console.warn('Underwater video autoplay blocked:', error);
+                    // Retry after a delay
+                    setTimeout(() => {
+                      underwaterVideo.play().catch(e => console.error('Video play failed:', e));
+                    }, 100);
+                  });
+              }
+            } else {
+              // Wait for video to load metadata, then play
+              console.log('Waiting for video to load...');
+              underwaterVideo.oncanplay = () => {
+                const playPromise = underwaterVideo.play();
+                if (playPromise !== undefined) {
+                  playPromise.catch((error) => {
+                    console.warn('Underwater video play failed:', error);
+                  });
+                }
+              };
             }
           } else {
             underwaterVideo.style.opacity = '0';
             underwaterVideo.pause();
+            underwaterVideo.currentTime = 0; // Reset video when exiting mode
           }
         }
         // Ensure all cards are visible and active
