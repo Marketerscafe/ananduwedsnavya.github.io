@@ -211,8 +211,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const p4 = parseFloat(archWrapper.getAttribute('data-scroll-p4')) || 0;
 
       // Compute zoom scale and fade out multiplier in perfect lockstep with s4 elements
-      const bfScale = Math.max(0.4, 1.0 - Math.pow(p4, 1.5) * 0.6); // Scale shrinks from 1.0 to 0.4 as you scroll
-      const bfOpacityMult = p4 < 0.85 ? 1.0 : Math.max(0, 1.0 - (p4 - 0.85) / 0.15); // Stays visible during boxes, fades at end
+      let bfScale = Math.max(0.4, 1.0 - Math.pow(p4, 1.5) * 0.6); // Scale shrinks from 1.0 to 0.4 as you scroll
+      let bfOpacityMult = p4 < 0.85 ? 1.0 : Math.max(0, 1.0 - (p4 - 0.85) / 0.15); // Stays visible during boxes, fades at end
+
+      // Increase butterfly size and opacity when in all-boxes-lit mode (button clicked)
+      if (scene4El.classList.contains('all-boxes-lit')) {
+        bfScale = Math.min(1.8, bfScale * 1.4); // Increase size by 40% (cap at 1.8)
+        bfOpacityMult = Math.min(1.0, bfOpacityMult * 1.3); // Increase opacity by 30% (cap at 1.0)
+      }
 
       canvas.style.transform = 'translate(-50%, -50%) scale(' + bfScale + ')';
 
