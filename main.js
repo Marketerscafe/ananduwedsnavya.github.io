@@ -1377,17 +1377,17 @@ document.addEventListener('DOMContentLoaded', () => {
       const ics = [
         'BEGIN:VCALENDAR',
         'VERSION:2.0',
-        'PRODID:-//Athul & Melvin Wedding//EN',
+        'PRODID:-//Anandu & Navya Wedding//EN',
         'CALSCALE:GREGORIAN',
         'METHOD:PUBLISH',
         'BEGIN:VEVENT',
-        'UID:athul-melvin-wedding-20260712@wedding',
+        'UID:anandu-navya-wedding-20260712@wedding',
         'DTSTAMP:20260601T000000Z',
         'DTSTART;TZID=Asia/Kolkata:20260712T103000',
         'DTEND;TZID=Asia/Kolkata:20260712T150000',
         'SUMMARY:ANANDU&NAVYA\'s BIG DAY',
         'LOCATION:' + venueAddress.replace(/,/g, '\\,'),
-        'DESCRIPTION:Cordially invited to celebrate the wedding of Athul Krishnan & Melvin John.\\n\\nCeremony: 10:30 AM – 12:30 PM\\nReception: 1:00 PM onwards\\nLunch: Following Reception',
+        'DESCRIPTION:Cordially invited to celebrate the wedding of Anandu Krishnan & Navya John.\\n\\nCeremony: 10:30 AM – 12:30 PM\\nReception: 1:00 PM onwards\\nLunch: Following Reception',
         'STATUS:CONFIRMED',
         'SEQUENCE:0',
         'BEGIN:VALARM',
@@ -1408,7 +1408,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = 'Athul-Melvin-Wedding.ics';
+      link.download = 'Anandu-Navya-Wedding.ics';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
