@@ -496,18 +496,58 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Chandelier frame sequence is fully image-driven, no gesture blessing required
 
-    // Play the video smoothly
-    video.play()
-      .then(() => {
-        // Playback started successfully
-      })
-      .catch((error) => {
-        console.warn('Playback failed or was interrupted:', error);
-        // Fallback: restore interaction and lighting on failure
-        wrapper.style.pointerEvents = 'auto';
-        ambientLight.classList.remove('playing');
-        interactionTriggered = false;
+    // Ensure video has buffered enough data before playing
+    const attemptPlay = (retryCount = 0) => {
+      // Check if video has sufficient buffered data
+      if (video.buffered.length > 0) {
+        const bufferedEnd = video.buffered.end(video.buffered.length - 1);
+        const duration = video.duration;
+        const bufferPercent = (bufferedEnd / duration) * 100 || 0;
+        
+        // If less than 20% buffered, wait a bit and retry
+        if (bufferPercent < 20 && retryCount < 3) {
+          console.log(`Video buffered: ${bufferPercent.toFixed(1)}%, retrying... (attempt ${retryCount + 1})`);
+          setTimeout(() => attemptPlay(retryCount + 1), 300);
+          return;
+        }
+      }
+
+      // Play the video smoothly
+      video.play()
+        .then(() => {
+          // Playback started successfully
+          console.log('Video playback started');
+        })
+        .catch((error) => {
+          console.warn('Playback failed or was interrupted:', error);
+          // Fallback: restore interaction and lighting on failure
+          wrapper.style.pointerEvents = 'auto';
+          ambientLight.classList.remove('playing');
+          interactionTriggered = false;
+          
+          // Log for debugging
+          console.error('Error details:', {
+            readyState: video.readyState,
+            networkState: video.networkState,
+            buffered: video.buffered.length,
+            error: video.error
+          });
+        });
+    };
+
+    attemptPlay();
+
+    // Add stall recovery listener
+    if (!window.videoStallHandler) {
+      window.videoStallHandler = true;
+      video.addEventListener('stalled', () => {
+        console.warn('Video stalled, attempting recovery...');
+        // Reset and retry
+        video.pause();
+        video.currentTime = video.currentTime;
+        video.play().catch(err => console.warn('Recovery play failed:', err));
       });
+    }
   }
 
   // Bind tap/click interaction to BOTH the video wrapper and the video element directly.
@@ -1150,6 +1190,16 @@ document.addEventListener('DOMContentLoaded', () => {
             causticB.loop = false;
             causticA.muted = true;
             causticB.muted = true;
+
+            // Dynamically bind caustic video sources (deferred from page load to reduce initial resource contention)
+            if (!causticA.src) {
+              causticA.src = 'assets/video/caustic.mp4';
+              causticA.load();
+            }
+            if (!causticB.src) {
+              causticB.src = 'assets/video/caustic.mp4';
+              causticB.load();
+            }
 
             function playActive() {
               activeVideo.classList.add('active');
