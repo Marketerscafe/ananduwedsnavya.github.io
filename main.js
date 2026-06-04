@@ -136,6 +136,13 @@ document.addEventListener('DOMContentLoaded', () => {
           if (s4Card3) s4Card3.classList.add('active');
           // Lock scroll and zoom when entering boxes-lit mode
           lockScrollAndZoom();
+          // Scroll to the last frame of Scene 4
+          const maxScroll = document.body.scrollHeight - window.innerHeight;
+          const targetScroll = maxScroll * 0.69; // End of Scene 4 (p ≈ 0.69)
+          window.scrollTo({
+            top: targetScroll,
+            behavior: 'smooth'
+          });
         } else {
           // Unlock scroll and zoom when exiting boxes-lit mode
           unlockScrollAndZoom();
