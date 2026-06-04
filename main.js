@@ -180,11 +180,11 @@ document.addEventListener('DOMContentLoaded', () => {
       evictLRUFrames();
       const numStr = String(frameNumber).padStart(3, '0');
       const img = new Image();
-      // PERF: Use WebP format (30-60% smaller) with fallback to JPEG
+      // PERF: Use WebP format (30-60% smaller than JPEG)
       img.src = 'assets/images/champagne/frame_' + numStr + '.webp';
       img.onerror = () => {
-        // Fallback to JPEG if WebP not available
-        img.src = 'assets/images/champagne/frame_' + numStr + '.jpg';
+        // Log load error for debugging
+        console.warn('Failed to load champagne frame', frameNumber);
       };
       // Asynchronous background decoding: decompress on parallel worker threads
       if (img.decode) {
@@ -930,12 +930,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (s3ChampagneImg && currentFrame !== lastRenderedFrame) {
       lastRenderedFrame = currentFrame;
       
-      // PERF: Use WebP format (30-60% smaller) with automatic JPEG fallback
+      // PERF: Use WebP format (30-60% smaller than JPEG)
       const numStr = String(currentFrame).padStart(3, '0');
       s3ChampagneImg.src = 'assets/images/champagne/frame_' + numStr + '.webp';
-      // Fallback to JPEG if WebP unavailable (rare in modern browsers)
+      // Log error if image fails to load for debugging
       s3ChampagneImg.onerror = () => {
-        s3ChampagneImg.src = 'assets/images/champagne/frame_' + numStr + '.jpg';
+        console.warn('Failed to load champagne frame', currentFrame);
       };
 
       // Dynamically align the container background color to the active image frame's own background!
