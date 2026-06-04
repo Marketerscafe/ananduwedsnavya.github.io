@@ -672,6 +672,52 @@ html, body {
   background-attachment: fixed;
 }
 
+.scene-4-container.all-boxes-lit .underwater-waves-video {
+  opacity: 1;
+  pointer-events: none;
+}
+
+.scene-4-container.all-boxes-lit .underwater-waves-overlay {
+  opacity: 1;
+  animation: loop-seam-hide 4s ease-in-out infinite;
+}
+
+/* Underwater Waves Video Styling */
+.underwater-waves-video {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 26; /* Behind scene content but above base background */
+  opacity: 0;
+  transition: opacity 0.6s ease-in-out;
+  pointer-events: none;
+}
+
+/* Loop Seam Overlay - Hides start/end of video loop */
+.underwater-waves-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 26.5; /* Slightly above video */
+  background: rgba(10, 8, 5, 0.3); /* Dark vignette matching scene theme */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Animation to hide loop seams by fading overlay in/out */
+@keyframes loop-seam-hide {
+  0% { opacity: 0; }
+  95% { opacity: 0; }
+  97% { opacity: 0.5; } /* Fade in near end of loop */
+  100% { opacity: 0; } /* Fade out at loop point */
+}
+
 .scene-4-container.all-boxes-lit #s4-card-1,
 .scene-4-container.all-boxes-lit #s4-card-2,
 .scene-4-container.all-boxes-lit #s4-card-3 {

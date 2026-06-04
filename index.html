@@ -17,7 +17,7 @@
       rel="stylesheet"
     />
     <!-- Main Stylesheet (with cache-buster) -->
-    <link rel="stylesheet" href="style.css?v=113.0" />
+    <link rel="stylesheet" href="style.css?v=114.0" />
   </head>
   <body>
     <!-- Loading Screen -->
@@ -200,6 +200,22 @@
       id="scene-4-container"
       aria-hidden="true"
     >
+      <!-- Underwater Waves Background Video (hidden by default, shown in all-boxes-lit mode) -->
+      <video
+        id="underwater-waves-video"
+        class="underwater-waves-video"
+        playsinline
+        muted
+        preload="auto"
+        autoplay
+        loop
+        aria-hidden="true"
+      >
+        <source src="assets/video/underwater-waves.webm" type="video/webm" />
+      </video>
+      <!-- Loop Seam Overlay (fades in/out to hide start/end of looping video) -->
+      <div class="underwater-waves-overlay" id="underwater-waves-overlay" aria-hidden="true"></div>
+      
       <div class="scene-4-content" id="scene-4-content">
         <!-- ARCH WRAPPER: Sits in the center and contains all S4 elements nested proportionally -->
         <div class="s4-arch-wrapper" id="s4-arch-wrapper" aria-hidden="true">

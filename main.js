@@ -166,6 +166,16 @@ document.addEventListener('DOMContentLoaded', () => {
       // Toggle all-boxes-lit state on Scene 4
       if (scene4) {
         scene4.classList.toggle('all-boxes-lit');
+        // Toggle underwater waves video visibility
+        const underwaterVideo = document.getElementById('underwater-waves-video');
+        if (underwaterVideo) {
+          if (scene4.classList.contains('all-boxes-lit')) {
+            underwaterVideo.style.opacity = '1';
+            underwaterVideo.play();
+          } else {
+            underwaterVideo.style.opacity = '0';
+          }
+        }
         // Ensure all cards are visible and active
         if (scene4.classList.contains('all-boxes-lit')) {
           if (s4Card1) s4Card1.classList.add('active');
