@@ -6,6 +6,43 @@
  * Scrolling after Scene 2 settles transitions into Scene 3.
  */
 document.addEventListener('DOMContentLoaded', () => {
+  // ─── DISABLE COPY/SELECT FEATURES ───
+  // Prevent text selection and copying throughout the site
+  document.addEventListener('selectstart', (e) => {
+    e.preventDefault();
+  });
+  
+  // Prevent copy
+  document.addEventListener('copy', (e) => {
+    e.preventDefault();
+  });
+  
+  // Prevent cut
+  document.addEventListener('cut', (e) => {
+    e.preventDefault();
+  });
+  
+  // Prevent right-click context menu
+  document.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+  });
+  
+  // Prevent keyboard shortcuts for copying/selecting
+  document.addEventListener('keydown', (e) => {
+    // Ctrl+C / Cmd+C (copy)
+    if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
+      e.preventDefault();
+    }
+    // Ctrl+X / Cmd+X (cut)
+    if ((e.ctrlKey || e.metaKey) && e.key === 'x') {
+      e.preventDefault();
+    }
+    // Ctrl+A / Cmd+A (select all)
+    if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+      e.preventDefault();
+    }
+  });
+
   // ─── LOADING SCREEN MANAGEMENT ───
   const loadingScreen = document.getElementById('loading-screen');
   let allResourcesLoaded = false;
@@ -136,6 +173,8 @@ document.addEventListener('DOMContentLoaded', () => {
           if (s4Card3) s4Card3.classList.add('active');
           // Lock scroll and zoom when entering boxes-lit mode
           lockScrollAndZoom();
+          // Change button text to "Resume Invite"
+          butterflyInteractBtn.textContent = 'Resume Invite';
           // Scroll to the last frame of Scene 4
           const maxScroll = document.body.scrollHeight - window.innerHeight;
           const targetScroll = maxScroll * 0.69; // End of Scene 4 (p ≈ 0.69)
@@ -146,6 +185,35 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
           // Unlock scroll and zoom when exiting boxes-lit mode
           unlockScrollAndZoom();
+          // Change button text back to "Interact with Butterfly"
+          butterflyInteractBtn.textContent = 'Interact with Butterfly';
+          
+          // Show white fog transition immediately
+          if (fog) {
+            fog.classList.add('white-transition');
+          }
+          
+          // Scroll to Scene 5 entry point to fade in Scene 5 while fading out Scene 4
+          const maxScroll = document.body.scrollHeight - window.innerHeight;
+          const targetScroll = maxScroll * 0.71; // Scene 5 fade-in starts (p ≈ 0.71)
+          window.scrollTo({
+            top: targetScroll,
+            behavior: 'smooth'
+          });
+          
+          // Fade out white fog after 1.5s to reveal Scene 5
+          setTimeout(() => {
+            if (fog) {
+              fog.classList.add('fade-out');
+            }
+          }, 1500);
+          
+          // Remove fog classes after fade is complete
+          setTimeout(() => {
+            if (fog) {
+              fog.classList.remove('white-transition', 'fade-out');
+            }
+          }, 3500);
         }
       }
     });
@@ -332,7 +400,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 1. Detect device orientation/viewport conditions (using valid CSS comma for OR)
   const isMobile = window.matchMedia('(orientation: portrait), (max-width: 767px)').matches;
-  const targetVideo = isMobile ? 'assets/video/intro-mobile.mp4' : 'assets/video/intro-desktop.mp4';
+  const targetVideo = 'assets/video/intro-desktop.mp4'; // Use desktop video for all orientations
 
   // 2. Bind only the correct video to prevent double downloads
   video.src = targetVideo;

@@ -78,6 +78,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Mouse coordinate projection (Default to hidden coordinate)
   const mouse3D = new THREE.Vector3(-999, -999, 0);
+  
+  // Track if user is currently pressing/holding (to pause figure-8 animation in dark mode)
+  let isUserPressing = false;
 
   // 6. Pointer coordinate unprojection relative to canvas bounding client rect
   function handlePointerMove(clientX, clientY) {
@@ -106,6 +109,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.addEventListener('touchend', () => {
     mouse3D.set(-999, -999, 0);
+  });
+
+  // Track user interaction (pressing/holding) to pause figure-8 in dark mode
+  window.addEventListener('mousedown', () => {
+    isUserPressing = true;
+  });
+
+  window.addEventListener('mouseup', () => {
+    isUserPressing = false;
+  });
+
+  window.addEventListener('touchstart', () => {
+    isUserPressing = true;
+  });
+
+  window.addEventListener('touchend', () => {
+    isUserPressing = false;
   });
 
   // 7. GLTF Loader
@@ -218,6 +238,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (scene4El.classList.contains('all-boxes-lit')) {
         bfScale = Math.min(2.2, bfScale * 1.8); // Increase size by 80% (cap at 2.2)
         bfOpacityMult = 1.0; // Keep full opacity like the boxes (no fade-out)
+        
+        // Increase size by additional 30% when user is holding/pressing on butterfly
+        if (isUserPressing) {
+          bfScale = Math.min(2.86, bfScale * 1.3); // Additional 30% size boost (cap at 2.86)
+        }
       }
 
       canvas.style.transform = 'translate(-50%, -50%) scale(' + bfScale + ')';
@@ -339,8 +364,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // Advance path time increment based on active startled flight speed multiplier
-      const activeSpeedMultiplier = isStartled ? 2.2 : 1.0;
-      pathTime += pathSpeed * dt * activeSpeedMultiplier;
+      // But pause figure-8 animation when user is pressing/holding in dark mode
+      const isInDarkMode = scene4El && scene4El.classList.contains('all-boxes-lit');
+      const shouldPauseAnimation = isUserPressing && isInDarkMode;
+      
+      if (!shouldPauseAnimation) {
+        const activeSpeedMultiplier = isStartled ? 2.2 : 1.0;
+        pathTime += pathSpeed * dt * activeSpeedMultiplier;
+      }
     }
 
     try {

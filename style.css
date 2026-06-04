@@ -106,6 +106,14 @@ html, body {
   font-family: 'SaolDisplay', 'VogueModerne', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Disable text selection and copying */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  /* Disable image dragging */
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
 }
 
 /* Loading Screen */
@@ -250,7 +258,7 @@ html, body {
 /* --- Portrait Viewport (Mobile First) --- */
 @media (orientation: portrait) {
   .intro-video {
-    object-fit: contain; /* Pure vertical composition safety, protecting focal elements */
+    object-fit: cover; /* Fill screen completely, crop edges as needed */
   }
 }
 
@@ -643,7 +651,7 @@ html, body {
   z-index: -1;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), background-image 3s ease-out, background-color 3s ease-out;
   will-change: opacity;
 }
 
@@ -657,7 +665,11 @@ html, body {
 .scene-4-container.all-boxes-lit {
   background-color: #0a0805;
   background-image: 
-    radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.85) 70%);
+    radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.85) 70%),
+    url('assets/images/butterfly-bg.webp');
+  background-size: cover, cover;
+  background-position: center, center;
+  background-attachment: fixed;
 }
 
 .scene-4-container.all-boxes-lit #s4-card-1,
@@ -680,6 +692,15 @@ html, body {
 /* Butterfly visibility enhancement in dark mode */
 .scene-4-container.all-boxes-lit #butterfly-canvas {
   filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.1));
+}
+
+/* Mobile optimization for background image */
+@media (max-width: 768px) {
+  .scene-4-container.all-boxes-lit {
+    background-attachment: scroll;
+    background-size: cover, cover;
+    background-position: center, center;
+  }
 }
 
 .scene-4-content {
@@ -1361,6 +1382,19 @@ html, body {
   pointer-events: auto; /* Prevent interaction during active transition */
 }
 
+/* White fog transition for Resume Invite button */
+.cinematic-transition-fog.white-transition {
+  z-index: 32;
+  opacity: 1;
+  background: #ffffff;
+  background-color: #ffffff;
+  transition: opacity 2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.cinematic-transition-fog.white-transition.fade-out {
+  opacity: 0;
+}
+
 /* 
   Mobile Portrait Fog Adaptation 
   Adjusts the radial gradient focal region to match the vertical 9:16 aspect ratio beautifully.
@@ -1526,7 +1560,7 @@ html, body {
   opacity: 0;
   pointer-events: none;
   will-change: opacity;
-  transition: opacity 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: opacity 3s cubic-bezier(0.25, 1, 0.5, 1);
   overflow: hidden;
 }
 
@@ -1545,7 +1579,7 @@ html, body {
   padding: 40px 12px;
   margin: 0 auto;
   max-height: calc(100vh - 80px);
-  overflow-y: auto;
+  overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
 }
 
