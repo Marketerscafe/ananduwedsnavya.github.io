@@ -663,6 +663,7 @@ html, body {
 
 /* All boxes lit state — darken background, illuminate all cards */
 .scene-4-container.all-boxes-lit {
+  opacity: 1;
   background-color: rgba(10, 8, 5, 0.3); /* Transparent dark overlay over video */
   background-image: none;
   background-size: cover, cover;
