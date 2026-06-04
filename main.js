@@ -108,7 +108,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const causticWrapper = document.getElementById('caustic-atmosphere-wrapper');
   const causticA = document.getElementById('caustic-a');
   const causticB = document.getElementById('caustic-b');
-  const s3ChampagneImg = document.getElementById('scene3-champagne-img');
+  const s3ChampagneCanvas = document.getElementById('scene3-champagne-canvas');
+  const s3ChampagneCtx = s3ChampagneCanvas ? s3ChampagneCanvas.getContext('2d') : null;
+
+  // Draw the initial frame on canvas startup
+  if (s3ChampagneCtx) {
+    const initImg = new Image();
+    initImg.src = 'assets/images/champagne/frame_001.webp';
+    initImg.onload = () => {
+      s3ChampagneCtx.clearRect(0, 0, 1080, 1440);
+      s3ChampagneCtx.drawImage(initImg, 0, 0, 1080, 1440);
+    };
+  }
   const scene4 = document.getElementById('scene-4-container');
   const s3Content = document.getElementById('scene-3-content');
   const s3ChampagneSeq = document.getElementById('scene3-champagne-sequence');
@@ -146,6 +157,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ─── BUTTERFLY INTERACTION BUTTON ───
   let isBoxesLitMode = false;
+  let activeUnderwaterVideo = null;
+  let nextUnderwaterVideo = null;
+  let underwaterCheckInterval = null;
+  const underwaterCrossfadeDuration = 0.8; // 0.8 seconds crossfade (matches 4.018s video length smoothly)
 
   function preventScroll(e) {
     e.preventDefault();
@@ -182,54 +197,102 @@ document.addEventListener('DOMContentLoaded', () => {
       if (scene4) {
         scene4.classList.toggle('all-boxes-lit');
         // Toggle underwater waves video visibility
-        const underwaterVideo = document.getElementById('underwater-waves-video');
-        if (underwaterVideo) {
+        const underwaterVideoA = document.getElementById('underwater-waves-video-a');
+        const underwaterVideoB = document.getElementById('underwater-waves-video-b');
+        if (underwaterVideoA && underwaterVideoB) {
           if (scene4.classList.contains('all-boxes-lit')) {
-            underwaterVideo.style.opacity = '1';
-            // Force preload the video on demand
-            underwaterVideo.preload = 'auto';
-            underwaterVideo.load(); // Trigger loading
-            
-            // Ensure video element is ready and play with promise handling
-            underwaterVideo.currentTime = 0; // Reset to start
-            underwaterVideo.playbackRate = 1.0; // Ensure normal speed
-            underwaterVideo.muted = true; // Ensure muted for autoplay to work
-            
-            // Wait for video to be loadable before playing
-            if (underwaterVideo.readyState >= 2) {
-              // Video has metadata, try to play immediately
-              const playPromise = underwaterVideo.play();
-              if (playPromise !== undefined) {
-                playPromise
-                  .then(() => {
-                    console.log('Underwater video playing immediately');
-                  })
-                  .catch((error) => {
-                    console.warn('Underwater video autoplay blocked:', error);
-                    // Retry after a delay
-                    setTimeout(() => {
-                      underwaterVideo.play().catch(e => console.error('Video play failed:', e));
-                    }, 100);
-                  });
-              }
-            } else {
-              // Wait for video to load metadata, then play
-              console.log('Waiting for video to load...');
-              underwaterVideo.oncanplay = () => {
-                const playPromise = underwaterVideo.play();
-                if (playPromise !== undefined) {
-                  playPromise.catch((error) => {
-                    console.warn('Underwater video play failed:', error);
-                  });
-                }
-              };
+            underwaterVideoA.preload = 'auto';
+            underwaterVideoB.preload = 'auto';
+            underwaterVideoA.muted = true;
+            underwaterVideoB.muted = true;
+            underwaterVideoA.loop = false;
+            underwaterVideoB.loop = false;
+
+            if (!underwaterVideoA.src) {
+              underwaterVideoA.src = 'assets/video/underwater-waves.webm';
+              underwaterVideoA.load();
             }
+            if (!underwaterVideoB.src) {
+              underwaterVideoB.src = 'assets/video/underwater-waves.webm';
+              underwaterVideoB.load();
+            }
+
+            activeUnderwaterVideo = underwaterVideoA;
+            nextUnderwaterVideo = underwaterVideoB;
+
+            const playActiveUnderwater = () => {
+              activeUnderwaterVideo.classList.add('active');
+              nextUnderwaterVideo.classList.remove('active');
+              
+              activeUnderwaterVideo.play()
+                .then(() => {
+                  startCheckingUnderwater();
+                })
+                .catch(err => console.warn("Underwater play failed:", err));
+            };
+
+            const startCheckingUnderwater = () => {
+              if (underwaterCheckInterval) clearInterval(underwaterCheckInterval);
+              
+              underwaterCheckInterval = setInterval(() => {
+                let duration = activeUnderwaterVideo.duration;
+                // Fallback for browsers that don't report WebM duration correctly
+                if (!duration || isNaN(duration) || duration === Infinity) {
+                  duration = 4.018;
+                }
+                const currentTime = activeUnderwaterVideo.currentTime;
+
+                if (duration && duration > 0) {
+                  // Trigger crossfade before the video ends
+                  if (duration - currentTime <= underwaterCrossfadeDuration) {
+                    clearInterval(underwaterCheckInterval);
+                    triggerUnderwaterCrossfade();
+                  }
+                }
+              }, 250);
+            };
+
+            const triggerUnderwaterCrossfade = () => {
+              nextUnderwaterVideo.currentTime = 0;
+              nextUnderwaterVideo.play()
+                .then(() => {
+                  nextUnderwaterVideo.classList.add('active');
+                  activeUnderwaterVideo.classList.remove('active');
+
+                  const prevVideo = activeUnderwaterVideo;
+                  setTimeout(() => {
+                    // Prevent race condition: only pause if it is no longer the active video
+                    if (prevVideo !== activeUnderwaterVideo) {
+                      prevVideo.pause();
+                      prevVideo.currentTime = 0;
+                    }
+                  }, underwaterCrossfadeDuration * 1000);
+
+                  const temp = activeUnderwaterVideo;
+                  activeUnderwaterVideo = nextUnderwaterVideo;
+                  nextUnderwaterVideo = temp;
+
+                  startCheckingUnderwater();
+                })
+                .catch(err => {
+                  console.warn("Underwater crossfade play failed, resetting active video:", err);
+                  activeUnderwaterVideo.currentTime = 0;
+                  startCheckingUnderwater();
+                });
+            };
+
+            playActiveUnderwater();
           } else {
-            underwaterVideo.style.opacity = '0';
-            underwaterVideo.pause();
-            underwaterVideo.currentTime = 0; // Reset video when exiting mode
-            // Stop preloading when exiting mode to save bandwidth
-            underwaterVideo.preload = 'none';
+            if (underwaterCheckInterval) clearInterval(underwaterCheckInterval);
+            
+            underwaterVideoA.pause();
+            underwaterVideoB.pause();
+            underwaterVideoA.currentTime = 0;
+            underwaterVideoB.currentTime = 0;
+            underwaterVideoA.classList.remove('active');
+            underwaterVideoB.classList.remove('active');
+            underwaterVideoA.preload = 'none';
+            underwaterVideoB.preload = 'none';
           }
         }
         // Ensure all cards are visible and active
@@ -281,6 +344,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
           }, 3500);
         }
+
+        // Dispatch window resize events to update the 3D butterfly canvas resolution and viewport limits
+        window.dispatchEvent(new Event('resize'));
+        setTimeout(() => {
+          window.dispatchEvent(new Event('resize'));
+        }, 150);
       }
     });
   }
@@ -288,7 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ─── CHAMPAGNE IMAGE SEQUENCE PRELOADER & CACHE ───
   // Advanced caching system with memory limits, LRU eviction, and directional preloading
   const preloadedImages = {};
-  const MAX_CACHE_FRAMES = 50;  // Keep ~50MB of frames in memory (assuming ~1MB per frame)
+  const MAX_CACHE_FRAMES = 220;  // Cache all 202 frames in memory to prevent scroll reload lag (WebP sizes are tiny ~50KB)
   let lastAccessOrder = {};     // Track frame access time for LRU eviction
   let accessCounter = 0;        // Monotonic counter for LRU tracking
   let batchPreloadScheduled = false;
@@ -317,6 +386,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function preloadFrame(frameNumber) {
     if (frameNumber < 1 || frameNumber > 202) return;
+    
+    // PERF: Skip preloading odd frames on mobile devices to save 50% memory and CPU
+    const isMobileDevice = window.matchMedia('(orientation: portrait), (max-width: 767px)').matches;
+    if (isMobileDevice && frameNumber % 2 !== 0 && frameNumber !== 1 && frameNumber !== 202) {
+      return;
+    }
+
     if (!preloadedImages[frameNumber]) {
       evictLRUFrames();
       const numStr = String(frameNumber).padStart(3, '0');
@@ -348,17 +424,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     previousFrame = currentFrame;
 
+    const isMobileDevice = window.matchMedia('(orientation: portrait), (max-width: 767px)').matches;
+
+    // Helper to get next frames in sequence (skips odd frames on mobile)
+    const getNextFrame = (start, step) => {
+      let next = start + step;
+      if (isMobileDevice) {
+        next = Math.round(next / 2) * 2;
+      }
+      return Math.max(1, Math.min(next, 202));
+    };
+
     // Tier 1: Current frame (critical)
     preloadFrame(currentFrame);
     
     // Tier 2: Next 10 frames in scroll direction (high priority)
     for (let i = 1; i <= 10; i++) {
-      preloadFrame(currentFrame + (i * lastScrollDirection));
+      preloadFrame(getNextFrame(currentFrame, i * lastScrollDirection));
     }
     
     // Tier 3: Previous 5 frames for backward scroll (medium priority)
     for (let i = 1; i <= 5; i++) {
-      preloadFrame(currentFrame - (i * lastScrollDirection));
+      preloadFrame(getNextFrame(currentFrame, -i * lastScrollDirection));
     }
 
     // Tier 4: Schedule batch preload of remaining frames in background
@@ -376,10 +463,14 @@ document.addEventListener('DOMContentLoaded', () => {
   function batchPreloadInBackground(currentFrame) {
     // Batch load frames in chunks to avoid blocking the render loop
     // Prioritize frames closer to current position
+    const isMobileDevice = window.matchMedia('(orientation: portrait), (max-width: 767px)').matches;
     const preloadQueue = [];
     
     // Add all frames in priority order (current is already loaded)
     for (let f = 1; f <= 202; f++) {
+      if (isMobileDevice && f % 2 !== 0 && f !== 1 && f !== 202) {
+        continue; // Skip odd frames on mobile
+      }
       if (!preloadedImages[f]) {
         const distance = Math.abs(f - currentFrame);
         preloadQueue.push({ frame: f, priority: distance });
@@ -413,16 +504,17 @@ document.addEventListener('DOMContentLoaded', () => {
   setTimeout(() => {
     if (typeof requestIdleCallback !== 'undefined') {
       requestIdleCallback(() => {
+        const isMobileDevice = window.matchMedia('(orientation: portrait), (max-width: 767px)').matches;
         // Immediate warm: frames 1-80 (covers Scene 2 & early Scene 3)
-        for (let i = 1; i <= 80; i += 5) {
-          preloadFrame(i);
+        for (let i = 1; i <= 80; i += (isMobileDevice ? 10 : 5)) {
+          preloadFrame(isMobileDevice ? Math.round(i / 2) * 2 : i);
         }
         
         // Deferred warm: frames 51-202 (rest of champagne sequence)
         // Use another idle callback to avoid blocking user interaction
         requestIdleCallback(() => {
-          for (let i = 51; i <= 202; i += 8) {
-            preloadFrame(i);
+          for (let i = 51; i <= 202; i += (isMobileDevice ? 16 : 8)) {
+            preloadFrame(isMobileDevice ? Math.round(i / 2) * 2 : i);
           }
         }, { timeout: 5000 });
       }, { timeout: 3000 });
@@ -507,6 +599,24 @@ document.addEventListener('DOMContentLoaded', () => {
         causticB.pause();
         causticB.currentTime = 0;
       }).catch(err => console.warn("Caustic B blessing failed:", err));
+    }
+
+    // Programmatically play & pause both underwater waves videos during this user gesture to "bless" them
+    const underwaterVideoA = document.getElementById('underwater-waves-video-a');
+    const underwaterVideoB = document.getElementById('underwater-waves-video-b');
+    if (underwaterVideoA) {
+      underwaterVideoA.muted = true;
+      underwaterVideoA.play().then(() => {
+        underwaterVideoA.pause();
+        underwaterVideoA.currentTime = 0;
+      }).catch(err => console.warn("Underwater A blessing failed:", err));
+    }
+    if (underwaterVideoB) {
+      underwaterVideoB.muted = true;
+      underwaterVideoB.play().then(() => {
+        underwaterVideoB.pause();
+        underwaterVideoB.currentTime = 0;
+      }).catch(err => console.warn("Underwater B blessing failed:", err));
     }
 
     // Chandelier frame sequence is fully image-driven, no gesture blessing required
@@ -713,7 +823,15 @@ document.addEventListener('DOMContentLoaded', () => {
       s3ContentOpacity = 1.0;
       s3Rise = 0;
       const scene3Progress = (p - 0.25) / 0.13;
-      currentFrame = Math.min(Math.max(Math.floor(scene3Progress * 201) + 1, 1), 202);
+      let targetFrame = Math.min(Math.max(Math.floor(scene3Progress * 201) + 1, 1), 202);
+      
+      // On mobile, skip odd frames to save memory and CPU
+      const isMobileDevice = window.matchMedia('(orientation: portrait), (max-width: 767px)').matches;
+      if (isMobileDevice) {
+        targetFrame = Math.round(targetFrame / 2) * 2;
+        targetFrame = Math.max(1, Math.min(targetFrame, 202));
+      }
+      currentFrame = targetFrame;
     } else if (p < 0.42) {
       // Scene 3 fades out (p = 0.38 to 0.42)
       const fadeOut = (p - 0.38) / 0.04;
@@ -1026,7 +1144,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (scene5) {
       if (s5Active) {
         scene5.classList.add('active');
-        scene5.setAttribute('aria-hidden', 'true');
+        scene5.removeAttribute('aria-hidden');
         const s5Display = 'flex';
         if (s5Display !== lastScene5Display) {
           scene5.style.display = s5Display;
@@ -1073,7 +1191,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (scene6) {
       if (s6Active) {
         scene6.classList.add('active');
-        scene6.setAttribute('aria-hidden', 'true');
+        scene6.removeAttribute('aria-hidden');
         const s6Display = 'flex';
         if (s6Display !== lastScene6Display) {
           scene6.style.display = s6Display;
@@ -1132,16 +1250,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Apply the active frame image sequence update ONLY if the frame number actually shifted
-    if (s3ChampagneImg && currentFrame !== lastRenderedFrame) {
-      lastRenderedFrame = currentFrame;
-      
-      // PERF: Use WebP format (30-60% smaller than JPEG)
-      const numStr = String(currentFrame).padStart(3, '0');
-      s3ChampagneImg.src = 'assets/images/champagne/frame_' + numStr + '.webp';
-      // Log error if image fails to load for debugging
-      s3ChampagneImg.onerror = () => {
-        console.warn('Failed to load champagne frame', currentFrame);
-      };
+    if (s3ChampagneCtx && currentFrame !== lastRenderedFrame) {
+      const img = preloadedImages[currentFrame];
+      if (img && img.complete && img.naturalWidth > 0) {
+        lastRenderedFrame = currentFrame;
+        s3ChampagneCtx.clearRect(0, 0, 1080, 1440);
+        s3ChampagneCtx.drawImage(img, 0, 0, 1080, 1440);
+      } else {
+        // Fallback: load and draw on canvas dynamically if not fully preloaded/complete yet
+        const tempImg = new Image();
+        const numStr = String(currentFrame).padStart(3, '0');
+        tempImg.src = 'assets/images/champagne/frame_' + numStr + '.webp';
+        tempImg.onload = () => {
+          // Double check to make sure this is still the active frame before drawing
+          if (currentFrame === parseInt(numStr, 10)) {
+            lastRenderedFrame = currentFrame;
+            s3ChampagneCtx.clearRect(0, 0, 1080, 1440);
+            s3ChampagneCtx.drawImage(tempImg, 0, 0, 1080, 1440);
+          }
+        };
+      }
 
       // Dynamically align the container background color to the active image frame's own background!
       // This completely dissolves the rectangular image border across the entire scroll progression.
@@ -1231,7 +1359,11 @@ document.addEventListener('DOMContentLoaded', () => {
               if (checkInterval) clearInterval(checkInterval);
               
               checkInterval = setInterval(() => {
-                const duration = activeVideo.duration;
+                let duration = activeVideo.duration;
+                // Fallback for browsers that don't report MP4 duration correctly
+                if (!duration || isNaN(duration) || duration === Infinity) {
+                  duration = 10.043;
+                }
                 const currentTime = activeVideo.currentTime;
 
                 if (duration && duration > 0) {
@@ -1253,8 +1385,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                   const prevVideo = activeVideo;
                   setTimeout(() => {
-                    prevVideo.pause();
-                    prevVideo.currentTime = 0;
+                    // Prevent race condition: only pause if it is no longer the active video
+                    if (prevVideo !== activeVideo) {
+                      prevVideo.pause();
+                      prevVideo.currentTime = 0;
+                    }
                   }, crossfadeDuration * 1000);
 
                   const temp = activeVideo;

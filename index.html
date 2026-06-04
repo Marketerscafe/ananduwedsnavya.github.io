@@ -136,15 +136,12 @@
     >
       <!-- Layer 2: Champagne Image Sequence -->
       <div class="scene3-champagne-sequence" id="scene3-champagne-sequence">
-        <img
-          id="scene3-champagne-img"
-          src="assets/images/champagne/frame_001.webp"
-          alt="Champagne celebration"
+        <canvas
+          id="scene3-champagne-canvas"
           class="champagne-sequence-img"
-          loading="eager"
           width="1080"
           height="1440"
-        />
+        ></canvas>
       </div>
 
       <!-- Layer 3: Date Typography -->
@@ -196,14 +193,23 @@
       id="scene-4-container"
       aria-hidden="true"
     >
-      <!-- Underwater Waves Background Video (hidden by default, shown in all-boxes-lit mode) -->
+      <!-- Underwater Waves Background Video (dual-video seamless crossfade loop) -->
       <video
-        id="underwater-waves-video"
+        id="underwater-waves-video-a"
         class="underwater-waves-video"
         playsinline
         muted
-        preload="none"
-        loop
+        preload="auto"
+        aria-hidden="true"
+      >
+        <source src="assets/video/underwater-waves.webm" type="video/webm" />
+      </video>
+      <video
+        id="underwater-waves-video-b"
+        class="underwater-waves-video"
+        playsinline
+        muted
+        preload="auto"
         aria-hidden="true"
       >
         <source src="assets/video/underwater-waves.webm" type="video/webm" />
@@ -265,6 +271,10 @@
             width="600"
             height="800"
           />
+        </div>
+        <!-- Interactive instruction pop-up -->
+        <div class="s4-interact-instruction" id="s4-interact-instruction" aria-hidden="true">
+          Tap or hold the butterfly and move around
         </div>
       </div>
     </section>

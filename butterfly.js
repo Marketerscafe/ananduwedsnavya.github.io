@@ -16,6 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
   canvas.style.display = 'none';
   archWrapper.insertBefore(canvas, archWrapper.firstChild); // Insert at the bottom of the DOM stack
 
+  // Reference to interactive instruction pop-up
+  const instructionEl = document.getElementById('s4-interact-instruction');
+
   // 2. Three.js Scene Setup
   const scene = new THREE.Scene();
 
@@ -82,7 +85,19 @@ document.addEventListener('DOMContentLoaded', () => {
   // Track if user is currently pressing/holding (to pause figure-8 animation in dark mode)
   let isUserPressing = false;
 
-  // 6. Pointer coordinate unprojection relative to canvas bounding client rect
+  // 6. Pointer coordinate unprojection relative to canvas bounding client rect & 3D interaction dragging
+  let isUserDragging = false;
+  let dragStartPointerX = 0;
+  let dragStartPointerY = 0;
+  let targetUserRotationY = 0;
+  let targetUserRotationX = 0;
+  let targetUserZoomZ = 0;
+
+  let currentUserRotationY = 0;
+  let currentUserRotationX = 0;
+  let currentUserZoomZ = 0;
+  let interactionWeight = 0;
+
   function handlePointerMove(clientX, clientY) {
     const rect = canvas.getBoundingClientRect();
     if (rect.width === 0 || rect.height === 0) return;
@@ -97,36 +112,69 @@ document.addEventListener('DOMContentLoaded', () => {
     mouse3D.copy(camera.position).add(dir.multiplyScalar(t));
   }
 
+  function onPointerDown(clientX, clientY) {
+    const s4Container = document.getElementById('scene-4-container');
+    const isInDarkMode = s4Container && s4Container.classList.contains('all-boxes-lit');
+    if (!isInDarkMode) return;
+
+    isUserDragging = true;
+    isUserPressing = true;
+    dragStartPointerX = clientX;
+    dragStartPointerY = clientY;
+  }
+
+  function onPointerMove(clientX, clientY) {
+    handlePointerMove(clientX, clientY);
+
+    if (isUserDragging) {
+      const deltaX = clientX - dragStartPointerX;
+      const deltaY = clientY - dragStartPointerY;
+
+      dragStartPointerX = clientX;
+      dragStartPointerY = clientY;
+
+      // Dragging left/right rotates sideways (yaw, around Y axis)
+      targetUserRotationY += deltaX * 0.012;
+
+      // Dragging up (negative Y delta) zooms in (positive Z depth)
+      // Dragging down (positive Y delta) zooms out (negative Z depth)
+      targetUserZoomZ -= deltaY * 0.025;
+      targetUserZoomZ = Math.max(-3.0, Math.min(targetUserZoomZ, 7.5));
+
+      // Dragging up/down also tilts pitch slightly
+      targetUserRotationX += deltaY * 0.005;
+      targetUserRotationX = Math.max(-0.6, Math.min(targetUserRotationX, 0.6));
+    }
+  }
+
+  function onPointerUp() {
+    isUserDragging = false;
+    isUserPressing = false;
+  }
+
+  window.addEventListener('mousedown', (e) => {
+    onPointerDown(e.clientX, e.clientY);
+  });
+
+  window.addEventListener('touchstart', (e) => {
+    if (e.touches.length > 0) {
+      onPointerDown(e.touches[0].clientX, e.touches[0].clientY);
+    }
+  }, { passive: true });
+
   window.addEventListener('mousemove', (e) => {
-    handlePointerMove(e.clientX, e.clientY);
+    onPointerMove(e.clientX, e.clientY);
   });
 
   window.addEventListener('touchmove', (e) => {
     if (e.touches.length > 0) {
-      handlePointerMove(e.touches[0].clientX, e.touches[0].clientY);
+      onPointerMove(e.touches[0].clientX, e.touches[0].clientY);
     }
   }, { passive: true });
 
-  window.addEventListener('touchend', () => {
-    mouse3D.set(-999, -999, 0);
-  });
-
-  // Track user interaction (pressing/holding) to pause figure-8 in dark mode
-  window.addEventListener('mousedown', () => {
-    isUserPressing = true;
-  });
-
-  window.addEventListener('mouseup', () => {
-    isUserPressing = false;
-  });
-
-  window.addEventListener('touchstart', () => {
-    isUserPressing = true;
-  });
-
-  window.addEventListener('touchend', () => {
-    isUserPressing = false;
-  });
+  window.addEventListener('mouseup', onPointerUp);
+  window.addEventListener('touchend', onPointerUp);
+  window.addEventListener('mouseleave', onPointerUp);
 
   // 7. GLTF Loader
   const loader = new THREE.GLTFLoader();
@@ -235,7 +283,8 @@ document.addEventListener('DOMContentLoaded', () => {
       let bfOpacityMult = p4 < 0.85 ? 1.0 : Math.max(0, 1.0 - (p4 - 0.85) / 0.15); // Stays visible during boxes, fades at end
 
       // Increase butterfly size and opacity when in all-boxes-lit mode (button clicked)
-      if (scene4El.classList.contains('all-boxes-lit')) {
+      const isInDarkMode = scene4El.classList.contains('all-boxes-lit');
+      if (isInDarkMode) {
         bfScale = Math.min(2.2, bfScale * 1.8); // Increase size by 80% (cap at 2.2)
         bfOpacityMult = 1.0; // Keep full opacity like the boxes (no fade-out)
         
@@ -245,7 +294,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      canvas.style.transform = 'translate(-50%, -50%) scale(' + bfScale + ')';
+      // When in interactive dark mode, canvas is fixed full screen, so no -50% translation is needed
+      if (isInDarkMode) {
+        canvas.style.transform = 'scale(' + bfScale + ')';
+      } else {
+        canvas.style.transform = 'translate(-50%, -50%) scale(' + bfScale + ')';
+      }
 
       let targetCanvasOpacity = 0;
       if (isActive && s4Opacity > 0.05) {
@@ -271,6 +325,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (butterfly) {
       const dt = Math.min(delta * 60, 2.0);
+
+      // Smoothly interpolate user variables
+      const lerpFactor = 0.1 * dt;
+      currentUserRotationY += (targetUserRotationY - currentUserRotationY) * lerpFactor;
+      currentUserRotationX += (targetUserRotationX - currentUserRotationX) * lerpFactor;
+      currentUserZoomZ += (targetUserZoomZ - currentUserZoomZ) * lerpFactor;
+
+      const targetWeight = isUserDragging ? 1.0 : 0.0;
+      interactionWeight += (targetWeight - interactionWeight) * (isUserDragging ? 0.1 : 0.06) * dt;
+
+      // Show/hide instruction element during dragging
+      if (instructionEl) {
+        if (isUserDragging) {
+          instructionEl.classList.add('hidden-active');
+        } else {
+          instructionEl.classList.remove('hidden-active');
+        }
+      }
 
       // ─── A. CINEMATIC PATH: Horizontal Figure-8 (Lemniscate of Bernoulli) ───
       // Center width radius (a) and vertical height loops radius (b)
@@ -304,7 +376,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const pointerDistance = currentPos.distanceTo(mouse3D);
       const startleThreshold = visibleWidth * 0.42;
 
-      if (pointerDistance < startleThreshold && mouse3D.x > -990) {
+      if (pointerDistance < startleThreshold && mouse3D.x > -990 && !isUserDragging) {
         isStartled = true;
         // Calculate startling force vector away from the cursor
         const pushDir = currentPos.clone().sub(mouse3D).normalize();
@@ -327,10 +399,11 @@ document.addEventListener('DOMContentLoaded', () => {
       // ─── D. POSITION UPDATE (Parent group tracks smooth trajectory only) ───
       const lastPos = position.clone();
       
+      // Interpolate path position to center (0, 0, 0) as interactionWeight increases
       position.set(
-        baseX + startleDisplacement.x,
-        baseY + startleDisplacement.y,
-        baseZ + startleDisplacement.z
+        baseX * (1.0 - interactionWeight) + startleDisplacement.x,
+        baseY * (1.0 - interactionWeight) + startleDisplacement.y,
+        baseZ * (1.0 - interactionWeight) + startleDisplacement.z + currentUserZoomZ
       );
 
       // Hard safety constraints: keeps the butterfly strictly bounded inside the text envelope box
@@ -338,7 +411,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const boundY = visibleHeight * 0.43;
       position.x = Math.max(Math.min(position.x, boundX), -boundX);
       position.y = Math.max(Math.min(position.y, boundY), -boundY);
-      position.z = Math.max(Math.min(position.z, 1.5), -0.2);
+      position.z = Math.max(Math.min(position.z, 8.5), -3.5); // Extended bound range for zoom interaction
 
       butterfly.position.copy(position);
 
@@ -346,11 +419,12 @@ document.addEventListener('DOMContentLoaded', () => {
       // Calculate true velocity vector based on current frame displacement of smooth trajectory
       velocity.copy(position).sub(lastPos);
 
+      // 1. Calculate automatic flight rotation
+      const autoQuaternion = new THREE.Quaternion();
       if (velocity.lengthSq() > 0.00001) {
         const dir = velocity.clone().normalize();
         const targetPos = position.clone().add(dir);
         
-        // Face flight direction smoothly using spherical linear interpolation (slerp) for extreme cinematic dampening
         const tempRotation = butterfly.quaternion.clone();
         butterfly.lookAt(targetPos);
         const targetRotation = butterfly.quaternion.clone();
@@ -361,6 +435,19 @@ document.addEventListener('DOMContentLoaded', () => {
         // Aerodynamic banking banking roll based on horizontal turns
         butterfly.rotateOnAxis(new THREE.Vector3(0, 0, 1), -velocity.x * 3.8);
         butterfly.rotateOnAxis(new THREE.Vector3(1, 0, 0), velocity.y * 1.6);
+        
+        autoQuaternion.copy(butterfly.quaternion);
+      } else {
+        autoQuaternion.copy(butterfly.quaternion);
+      }
+
+      // 2. Blend towards user interaction rotation if interaction is active
+      if (interactionWeight > 0.001) {
+        const userQuaternion = new THREE.Quaternion();
+        const euler = new THREE.Euler(0.4 + currentUserRotationX, currentUserRotationY, 0, 'YXZ');
+        userQuaternion.setFromEuler(euler);
+        
+        butterfly.quaternion.copy(autoQuaternion).slerp(userQuaternion, interactionWeight);
       }
 
       // Advance path time increment based on active startled flight speed multiplier
@@ -371,6 +458,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!shouldPauseAnimation) {
         const activeSpeedMultiplier = isStartled ? 2.2 : 1.0;
         pathTime += pathSpeed * dt * activeSpeedMultiplier;
+      }
+
+      // Decay user variables towards 0 when not dragging
+      if (!isUserDragging) {
+        targetUserRotationY += (0 - targetUserRotationY) * 0.08 * dt;
+        targetUserRotationX += (0 - targetUserRotationX) * 0.08 * dt;
+        targetUserZoomZ += (0 - targetUserZoomZ) * 0.08 * dt;
       }
     }
 

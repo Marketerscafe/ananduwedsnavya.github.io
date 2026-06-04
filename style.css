@@ -673,14 +673,13 @@ html, body {
   z-index: 1000; /* Maintain very high z-index */
 }
 
-.scene-4-container.all-boxes-lit .underwater-waves-video {
+.scene-4-container.all-boxes-lit .underwater-waves-video.active {
   opacity: 0.75;
   pointer-events: none;
 }
 
 .scene-4-container.all-boxes-lit .underwater-waves-overlay {
   opacity: 1;
-  animation: loop-seam-hide 4s ease-in-out infinite;
 }
 
 /* Underwater Waves Video Styling */
@@ -693,7 +692,7 @@ html, body {
   object-fit: cover;
   z-index: -99999; /* Extremely far behind everything */
   opacity: 0;
-  transition: opacity 0.6s ease-in-out;
+  transition: opacity 0.8s ease-in-out;
   pointer-events: none;
 }
 
@@ -2737,4 +2736,62 @@ html, body {
   .s5-rsvp-title {
     font-size: 24px;
   }
+}
+
+/* Interactive 3D Butterfly Instruction */
+.s4-interact-instruction {
+  position: absolute;
+  bottom: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1001; /* High z-index to stay visible above overlays */
+  
+  /* Typography */
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(10px, 2.2vw, 12px);
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+  
+  /* Animations & transitions */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.6s ease-in-out, visibility 0.6s ease-in-out;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* Show when in boxes-lit mode */
+.scene-4-container.all-boxes-lit .s4-interact-instruction {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Hide when user is interacting/dragging */
+.scene-4-container.all-boxes-lit .s4-interact-instruction.hidden-active {
+  opacity: 0;
+  visibility: hidden;
+}
+
+@media (max-width: 768px) {
+  .s4-interact-instruction {
+    bottom: 90px;
+    letter-spacing: 0.16em;
+  }
+}
+
+/* Prevent butterfly clipping in interactive mode */
+.scene-4-container.all-boxes-lit #butterfly-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw !important;
+  height: 100vh !important;
+  width: 100dvw !important;
+  height: 100dvh !important;
+  border-radius: 0;
+  z-index: 1002 !important; /* Place above cards and overlays */
 }
